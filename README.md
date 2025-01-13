@@ -23,6 +23,8 @@
 ├── index.html            # 앱의 메인 HTML 파일 (Vue 앱 마운트 포인트)
 ├── package.json          # 프로젝트 메타데이터 및 종속성 목록
 ├── package-lock.json     # 프로젝트 종속성 잠금 파일 (정확한 버전 관리)
+├── postcss.config.js     # PostCSS 설정 파일 (TailwindCSS 및 Autoprefixer 설정)
+├── tailwind.config.js    # TailwindCSS 설정 파일 (스타일 관리 및 사용자 정의 설정)
 ├── tsconfig.app.json     # TypeScript 설정 (앱 관련 컴파일러 옵션)
 ├── tsconfig.json         # TypeScript 기본 설정 파일
 ├── tsconfig.node.json    # Node.js 관련 TypeScript 설정
