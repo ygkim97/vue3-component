@@ -24,8 +24,11 @@ export default [
       "default-case-last": "error", // https://eslint.org/docs/latest/rules/default-case-last
       // 비교 구문  ====
       eqeqeq: ["error", "always"], // https://eslint.org/docs/latest/rules/eqeqeq,
-      // 변수명을 x, y, i , l 등 의미없는 한글자 제한
-      "id-length": "error", // https://eslint.org/docs/latest/rules/id-length
+      // 변수명을 a, b, i 등 의미없는 한글자 제한
+      "id-length": ["error", { // https://eslint.org/docs/latest/rules/id-length
+        "min": 2,
+        "exceptions": ["x", "y", "z"], // 예외 처리
+      }],
       // 변수 선언시 무조건 초기화
       "init-declarations": ["error", "always"], // https://eslint.org/docs/latest/rules/init-declarations
       //  콜백이 중첩될 수 있는 최대 깊이 3
