@@ -3,9 +3,11 @@ import { RouterLink, useRoute } from "vue-router";
 import { computed } from "vue";
 const route = useRoute();
 const currentPath = computed(() => route.path);
+
 const menuList = [
   { name: "Home", path: "/" },
-  { name: "About", path: "/about" }
+  { name: "About", path: "/about" },
+  { name: "VueFlow", path: "/sample/vueFlow" }
 ];
 </script>
 
@@ -13,7 +15,7 @@ const menuList = [
   <nav class="navbar">
     <div class="navbar-container">
       <RouterLink to="/" class="navbar-logo">
-        <svg-icon name="vueLogo" class="w-[25px] h-[25px]"></svg-icon>
+        <svg-icon name="vue-logo" class="w-[25px] h-[25px]"></svg-icon>
         <span class="navbar-logo-text">VUE3-COMPONENT</span>
       </RouterLink>
       <div class="navbar-menu" id="navbar-dropdown">

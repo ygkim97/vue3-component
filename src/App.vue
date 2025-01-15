@@ -13,6 +13,6 @@ import Header from "./components/layouts/header.vue";
 
 <style scoped>
 main {
-  padding: 20px;
+  height: calc(100vh - 64px);
 }
 </style>
