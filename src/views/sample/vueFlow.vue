@@ -5,6 +5,7 @@ import { Background } from "@vue-flow/background";
 import { ControlButton, Controls } from "@vue-flow/controls";
 import { MiniMap } from "@vue-flow/minimap";
 
+import CustomNode from "@/components/sample/vueFlow/customNode.vue";
 import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
 
 const { addEdges } = useVueFlow();
@@ -23,9 +24,9 @@ const addNode = () => {
   const id = (nodes.value.length + 1).toString();
   nodes.value.push({
     id,
-    type: id === "1" ? "input" : "default",
+    type: "custom",
     position: { x: 200 * nodes.value.length, y: 0 },
-    data: { label: `Node ${id}` }
+    data: { type: id === "1" ? "input" : "default", label: `Node ${id}` }
   });
 };
 
@@ -65,6 +66,9 @@ const onConnect = (params: ConnectParams) => {
         <button type="button" @click="resetNode">reset node</button>
       </Panel>
       <MiniMap pannable zoomable maskColor="#aaa" />
+      <template #node-custom="props">
+        <CustomNode :data="props.data" />
+      </template>
       <Controls position="top-right">
         <ControlButton title="test button" @click="onTestButton">T</ControlButton>
       </Controls>

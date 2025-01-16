@@ -2,27 +2,27 @@
   "nodes": [
     {
       "id": "1",
-      "type": "input",
+      "type": "custom",
       "position": { "x": 0, "y": 0 },
-      "data": { "label": "Node 1" }
+      "data": { "type": "input", "label": "Node 1" }
     },
     {
       "id": "2",
-      "type": "default",
+      "type": "custom",
       "position": { "x": 200, "y": 0 },
-      "data": { "label": "Node 2" }
+      "data": { "type": "default", "label": "Node 2" }
     },
     {
       "id": "3",
-      "type": "default",
+      "type": "custom",
       "position": { "x": 400, "y": 0 },
-      "data": { "label": "Node 3" }
+      "data": { "type": "default", "label": "Node 3" }
     },
     {
       "id": "4",
-      "type": "output",
+      "type": "custom",
       "position": { "x": 600, "y": 0 },
-      "data": { "label": "Node 4" }
+      "data": { "type": "output", "label": "Node 4" }
     }
   ],
   "edges": [
