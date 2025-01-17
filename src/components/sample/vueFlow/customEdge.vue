@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { BaseEdge, EdgeLabelRenderer, getBezierPath, useVueFlow } from "@vue-flow/core";
-import { computed } from "vue";
+import CloseIcon from "@/assets/images/icon/closIcon.vue";
 
 const { getSelectedEdges } = useVueFlow();
 
@@ -66,13 +66,15 @@ watch(getSelectedEdges, ([edges]) => {
         transform: `translate(-50%, -50%) translate(${path[1]}px,${path[2]}px)`
       }"
     >
-      <button class="edge-delete-button" @click="$emit('removeEdge', id)">×</button>
+      <button class="edge-delete-button" @click="$emit('removeEdge', id)">
+        <CloseIcon class="w-[6px] h-[6px]"></CloseIcon>
+      </button>
     </div>
   </EdgeLabelRenderer>
 </template>
 
 <style>
 .edge-delete-button {
-  @apply w-4 h-4 bg-blue-900 text-white flex justify-center items-center rounded-full text-xs;
+  @apply flex bg-blue-900 text-white p-1 rounded-full;
 }
 </style>
