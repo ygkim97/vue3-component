@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { ref, watch } from "vue";
 import { storeToRefs } from "pinia";
-import { VueFlow, Panel } from "@vue-flow/core";
+import { VueFlow, Panel, useVueFlow } from "@vue-flow/core";
 import { ControlButton, Controls } from "@vue-flow/controls";
 import { MiniMap } from "@vue-flow/minimap";
 
@@ -8,14 +9,25 @@ import CustomNode from "@/components/sample/vueFlow/customNode.vue";
 import CustomEdge from "@/components/sample/vueFlow/customEdge.vue";
 import Sidebar from "@/components/sample/vueFlow/sidebar.vue";
 import DropzoneBackground from "@/components/sample/vueFlow/dropzoneBackground.vue";
+import BottomBanner from "@/components/sample/vueFlow/bottomBanner.vue";
 import useDragAndDrop from "@/components/sample/vueFlow/dragAndDrop.ts";
 import type { ConnectParams } from "@/types/vueFlow.ts";
 import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
 
+const { getSelectedNodes, setNodes } = useVueFlow();
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 const vueFlowStore = useVueFlowStore();
 const { resetAll, getJsonData: fetchJsonData, addNode, addEdge, removeEdge } = vueFlowStore;
 const { nodes, edges } = storeToRefs(vueFlowStore);
+
+const selectedNode = ref<Node>(null);
+
+/**
+ * Bottom Banner Open
+ */
+watch(getSelectedNodes, ([node]) => {
+  selectedNode.value = node || null;
+});
 
 /**
  * Test if the JSON data is being rendered correctly
@@ -71,6 +83,14 @@ const onConnect = (params: ConnectParams) => {
     target: params.target
   });
 };
+
+/**
+ * Bottom Banner Close
+ */
+const closeBanner = () => {
+  setNodes((nodes) => nodes.map((node) => (node.id === selectedNode.value.id ? { ...node, selected: false } : node)));
+  selectedNode.value = null;
+};
 </script>
 
 <template>
@@ -121,6 +141,7 @@ const onConnect = (params: ConnectParams) => {
         <ControlButton title="test button" @click="onControlButton">T</ControlButton>
       </Controls>
     </VueFlow>
+    <BottomBanner :selectedNode="selectedNode" @close="closeBanner"></BottomBanner>
   </div>
 </template>
 
@@ -128,15 +149,13 @@ const onConnect = (params: ConnectParams) => {
 @import "@vue-flow/core/dist/style.css";
 @import "@vue-flow/core/dist/theme-default.css";
 @import "@vue-flow/controls/dist/style.css";
-
 .vue-flow-wrapper {
-  height: 100%;
-  display: flex;
+  @apply h-full flex relative;
 }
 
 /* Node Custom */
 .vue-flow__node {
-  @apply w-36 h-10 rounded-full border-2 border-blue-900 flex items-center justify-center text-sm font-medium text-blue-900 !important;
+  @apply w-36 h-10 rounded-full border-2 border-blue-900 flex items-center justify-center text-sm font-medium text-blue-900 bg-white !important;
 }
 
 .vue-flow__node.selected {
