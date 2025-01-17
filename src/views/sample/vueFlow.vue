@@ -12,9 +12,8 @@ import type { ConnectParams } from "@/types/vueFlow.ts";
 import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
 
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
-const { addEdges } = useVueFlow();
 const vueFlowStore = useVueFlowStore();
-const { resetAll, getJsonData: fetchJsonData, addNode } = vueFlowStore;
+const { resetAll, getJsonData: fetchJsonData, addNode, addEdge } = vueFlowStore;
 const { nodes, edges } = storeToRefs(vueFlowStore);
 
 /**
@@ -64,7 +63,11 @@ const onControlButton = () => {
  * Enable node connections
  */
 const onConnect = (params: ConnectParams) => {
-  addEdges(params);
+  addEdge({
+    id: `e${params.source}->${params.target}`,
+    source: params.source,
+    target: params.target
+  });
 };
 </script>
 

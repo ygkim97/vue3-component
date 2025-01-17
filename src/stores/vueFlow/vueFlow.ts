@@ -22,5 +22,9 @@ export const useVueFlowStore = defineStore("vueFlow", () => {
     nodes.push(node);
   };
 
-  return { nodes, edges, getJsonData, resetAll, addNode };
+  const addEdge = (edge: Edge) => {
+    edges.push(edge);
+  };
+
+  return { nodes, edges, getJsonData, resetAll, addNode, addEdge };
 });
