@@ -26,5 +26,10 @@ export const useVueFlowStore = defineStore("vueFlow", () => {
     edges.push(edge);
   };
 
-  return { nodes, edges, getJsonData, resetAll, addNode, addEdge };
+  const removeEdge = (removeId: string) => {
+    const updatedEdges = edges.filter(({ id }) => id !== removeId);
+    edges.splice(0, edges.length, ...updatedEdges);
+  };
+
+  return { nodes, edges, getJsonData, resetAll, addNode, addEdge, removeEdge };
 });

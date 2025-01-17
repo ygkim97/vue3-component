@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { VueFlow, useVueFlow, Panel } from "@vue-flow/core";
+import { VueFlow, Panel } from "@vue-flow/core";
 import { ControlButton, Controls } from "@vue-flow/controls";
 import { MiniMap } from "@vue-flow/minimap";
 
 import CustomNode from "@/components/sample/vueFlow/customNode.vue";
+import CustomEdge from "@/components/sample/vueFlow/customEdge.vue";
 import Sidebar from "@/components/sample/vueFlow/sidebar.vue";
 import DropzoneBackground from "@/components/sample/vueFlow/dropzoneBackground.vue";
 import useDragAndDrop from "@/components/sample/vueFlow/dragAndDrop.ts";
@@ -13,7 +14,7 @@ import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
 
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 const vueFlowStore = useVueFlowStore();
-const { resetAll, getJsonData: fetchJsonData, addNode, addEdge } = vueFlowStore;
+const { resetAll, getJsonData: fetchJsonData, addNode, addEdge, removeEdge } = vueFlowStore;
 const { nodes, edges } = storeToRefs(vueFlowStore);
 
 /**
@@ -65,6 +66,7 @@ const onControlButton = () => {
 const onConnect = (params: ConnectParams) => {
   addEdge({
     id: `e${params.source}->${params.target}`,
+    type: "custom",
     source: params.source,
     target: params.target
   });
@@ -98,8 +100,22 @@ const onConnect = (params: ConnectParams) => {
         <button type="button" @click="onPanelButton">Panel</button>
       </Panel>
       <MiniMap pannable zoomable maskColor="#aaa" />
-      <template #node-custom="props">
-        <CustomNode :data="props.data" />
+      <template #node-custom="customNodeProps">
+        <CustomNode :data="customNodeProps.data" />
+      </template>
+      <template #edge-custom="customEdgeProps">
+        <CustomEdge
+          :id="customEdgeProps.id"
+          :source-x="customEdgeProps.sourceX"
+          :source-y="customEdgeProps.sourceY"
+          :target-x="customEdgeProps.targetX"
+          :target-y="customEdgeProps.targetY"
+          :source-position="customEdgeProps.sourcePosition"
+          :target-position="customEdgeProps.targetPosition"
+          :marker-end="customEdgeProps.markerEnd"
+          :style="customEdgeProps.style"
+          @removeEdge="removeEdge"
+        />
       </template>
       <Controls position="top-right">
         <ControlButton title="test button" @click="onControlButton">T</ControlButton>
