@@ -1,28 +1,37 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { storeToRefs } from "pinia";
 import { VueFlow, useVueFlow, Panel } from "@vue-flow/core";
-import { Background } from "@vue-flow/background";
 import { ControlButton, Controls } from "@vue-flow/controls";
 import { MiniMap } from "@vue-flow/minimap";
 
 import CustomNode from "@/components/sample/vueFlow/customNode.vue";
+import Sidebar from "@/components/sample/vueFlow/sidebar.vue";
+import DropzoneBackground from "@/components/sample/vueFlow/dropzoneBackground.vue";
+import useDragAndDrop from "@/components/sample/vueFlow/dragAndDrop.ts";
+import type { ConnectParams } from "@/types/vueFlow.ts";
 import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
 
+const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 const { addEdges } = useVueFlow();
 const vueFlowStore = useVueFlowStore();
-const nodes = ref<Node[]>([]);
-const edges = ref<Edge[]>([]);
+const { resetAll, getJsonData: fetchJsonData, addNode } = vueFlowStore;
+const { nodes, edges } = storeToRefs(vueFlowStore);
 
-// NOTE: test if the JSON data is being rendered correctly
+/**
+ * Test if the JSON data is being rendered correctly
+ */
 const getJsonData = () => {
-  nodes.value = JSON.parse(JSON.stringify(vueFlowStore.nodes));
-  edges.value = JSON.parse(JSON.stringify(vueFlowStore.edges));
+  if (confirm("기존 노드가 초기화됩니다. 계속 진행하시겠습니까?")) {
+    fetchJsonData();
+  }
 };
 
-// NOTE: node add test
-const addNode = () => {
+/**
+ * Node create test
+ */
+const createNode = () => {
   const id = (nodes.value.length + 1).toString();
-  nodes.value.push({
+  addNode({
     id,
     type: "custom",
     position: { x: 200 * nodes.value.length, y: 0 },
@@ -30,47 +39,67 @@ const addNode = () => {
   });
 };
 
-// NOTE: node reset test
+/**
+ * Node reset test
+ */
 const resetNode = () => {
-  nodes.value = [];
-  edges.value = [];
+  resetAll();
 };
 
-// NOTE: test the added control button
-const onTestButton = () => {
-  alert("TEST BUTTON CLICK!");
+/**
+ * Test the added panel button
+ */
+const onPanelButton = () => {
+  alert("PANEL BUTTON CLICK!");
 };
 
-// NOTE: enable node connections
+/**
+ * Test the added control button
+ */
+const onControlButton = () => {
+  alert("CONTROL BUTTON CLICK!");
+};
+
+/**
+ * Enable node connections
+ */
 const onConnect = (params: ConnectParams) => {
   addEdges(params);
 };
 </script>
 
 <template>
-  <div class="vue-flow-wrapper">
+  <div class="vue-flow-wrapper" @drop="onDrop">
+    <Sidebar @getJsonData="getJsonData" @createNode="createNode" @resetNode="resetNode" />
     <VueFlow
       class="vue-flow"
       fit-view-on-init
       :nodes="nodes"
       :edges="edges"
-      :default-viewport="{ zoom: 3 }"
+      :default-viewport="{ zoom: 1.5 }"
       :min-zoom="0.2"
-      :max-zoom="4"
+      :max-zoom="3"
       @connect="onConnect"
+      @dragover="onDragOver"
+      @dragleave="onDragLeave"
     >
-      <Background variant="dots" :gap="16" :size="1" pattern-color="#aaa" />
+      <DropzoneBackground
+        :style="{
+          backgroundColor: isDragOver ? '#e7f3ff' : 'transparent',
+          transition: 'background-color 0.2s ease'
+        }"
+      >
+        <p v-if="isDragOver">Drop here</p>
+      </DropzoneBackground>
       <Panel class="panel-button-group" position="top-left">
-        <button type="button" @click="getJsonData">get json data</button>
-        <button type="button" @click="addNode">Add a node</button>
-        <button type="button" @click="resetNode">reset node</button>
+        <button type="button" @click="onPanelButton">Panel</button>
       </Panel>
       <MiniMap pannable zoomable maskColor="#aaa" />
       <template #node-custom="props">
         <CustomNode :data="props.data" />
       </template>
       <Controls position="top-right">
-        <ControlButton title="test button" @click="onTestButton">T</ControlButton>
+        <ControlButton title="test button" @click="onControlButton">T</ControlButton>
       </Controls>
     </VueFlow>
   </div>
@@ -83,9 +112,10 @@ const onConnect = (params: ConnectParams) => {
 
 .vue-flow-wrapper {
   height: 100%;
+  display: flex;
 }
 
-/* node custom */
+/* Node Custom */
 .vue-flow__node {
   @apply w-36 h-10 rounded-full border-2 border-blue-900 flex items-center justify-center text-sm font-medium text-blue-900 !important;
 }
@@ -94,17 +124,17 @@ const onConnect = (params: ConnectParams) => {
   @apply bg-blue-900 text-white !important;
 }
 
-/* handle custom */
+/* Handle Custom */
 .vue-flow__handle {
   @apply w-2 h-2 border-blue-900 border-2 bg-white !important;
 }
 
-/* panel custom */
+/* Panel Custom */
 .panel-button-group button {
   @apply text-white bg-blue-900 hover:bg-blue-900/90 focus:ring-4 focus:outline-none focus:ring-blue-900/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-blue-900/55 me-2 mb-2;
 }
 
-/* controls custom */
+/* Controls Custom */
 .vue-flow__controls {
   @apply flex;
 }
