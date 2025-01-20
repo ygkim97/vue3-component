@@ -6,6 +6,7 @@ import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
 // TODO: 드롭 시, 격자에 맞춰 배치되도록 설정
 
 let id = 0;
+const GRID_SIZE = { X: 200, Y: 100 };
 
 const getId = (): string => {
   return `Dnd Node ${id++}`;
@@ -80,12 +81,21 @@ export default function useDragAndDrop() {
       y: event.clientY
     });
 
+    // NODE: x, y 좌표를 격자 크기에 맞게 정렬
+    // TODO: 해당 좌표에 이미 노드가 존재할 경우 처리
+    const alignedPosition = ["x", "y"].reduce((acc, coordinate) => {
+      const gridSize = GRID_SIZE[coordinate.toUpperCase()];
+      const value = position[coordinate];
+      acc[coordinate] = Math.round(value / gridSize) * gridSize;
+      return acc;
+    }, {});
+
     const nodeId = getId();
 
     const newNode = {
       id: nodeId,
       type: "custom",
-      position,
+      position: alignedPosition,
       data: { type: draggedType.value, label: nodeId }
     };
 
@@ -95,9 +105,15 @@ export default function useDragAndDrop() {
      * We can hook into events even in a callback, and we can remove the event listener after it's been called.
      */
     const { off } = onNodesInitialized(() => {
-      updateNode(nodeId, (node) => ({
-        position: { x: node.position.x - node.dimensions.width / 2, y: node.position.y - node.dimensions.height / 2 }
-      }));
+      updateNode(nodeId, (node) => {
+        // 중심 정렬 및 격자 맞춤 조정
+        const adjustedPosition = {
+          x: Math.round((node.position.x - node.dimensions.width / 2) / GRID_SIZE.X) * GRID_SIZE.X,
+          y: Math.round((node.position.y - node.dimensions.height / 2) / GRID_SIZE.Y) * GRID_SIZE.Y
+        };
+
+        return { position: adjustedPosition };
+      });
 
       off();
     });
