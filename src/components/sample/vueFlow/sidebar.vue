@@ -1,8 +1,6 @@
 <script setup>
 import { onMounted, ref } from "vue";
 
-import ArrowUpIcon from "@/assets/images/icon/ArrowUpIcon.vue";
-import ArrowDownIcon from "@/assets/images/icon/ArrowDownIcon.vue";
 import useDragAndDrop from "./dragAndDrop.ts";
 const { onDragStart } = useDragAndDrop();
 
@@ -48,8 +46,8 @@ onMounted(() => {
         <button @click="toggleAccordion(item.id)" class="vue-flow__accordion-header">
           <span class="vue-flow__accordion-text">{{ item.label }}</span>
           <span class="vue-flow__accordion-icon">
-            <ArrowUpIcon v-if="accordionState[item.id]" />
-            <ArrowDownIcon v-else />
+            <img v-if="accordionState[item.id]" src="@/assets/images/icon/arrow-up.svg" alt="open" />
+            <img v-else src="@/assets/images/icon/arrow-down.svg" alt="hide" />
           </span>
         </button>
         <div

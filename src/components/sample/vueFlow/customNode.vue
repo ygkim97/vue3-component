@@ -2,8 +2,6 @@
 import { ref } from "vue";
 import { Handle, Position } from "@vue-flow/core";
 import { NodeToolbar } from "@vue-flow/node-toolbar";
-import CloseIcon from "@/assets/images/icon/closIcon.vue";
-import PenIcon from "@/assets/images/icon/penIcon.vue";
 
 const props = defineProps({
   data: {
@@ -13,18 +11,22 @@ const props = defineProps({
 });
 
 const toolbarItemList = [
-  { id: "delete", isComponent: true, componentPath: CloseIcon },
-  { id: "info", isComponent: false, text: "i" },
-  { id: "edit", isComponent: true, componentPath: PenIcon },
-  { id: "start", isComponent: false, text: "▶︎" }
+  { id: "delete", isIcon: true, iconName: "close" },
+  { id: "info", isIcon: false, text: "i" },
+  { id: "edit", isIcon: true, iconName: "pen" },
+  { id: "start", isIcon: false, text: "▶︎" }
 ];
 
 const nodeType = ref(props.data?.type);
 const nodeLabel = ref(props.data?.label);
+
+function getImageUrl(name) {
+  return new URL(`/src/assets/images/icon/${name}.svg`, import.meta.url).href;
+}
 </script>
 
 <template>
-  <!-- TODO: toolbar component 분리 -->
+  <!-- TODO: toolbar component -->
   <NodeToolbar :is-visible="props.data.toolbarVisible" :position="Position.Bottom">
     <button
       v-for="item in toolbarItemList"
@@ -33,8 +35,9 @@ const nodeLabel = ref(props.data?.label);
       :class="{ selected: item.id === data.item?.id }"
       @click="$emit('onToolbarClick', item)"
     >
-      <component v-if="item.isComponent" :is="item.componentPath" class="w-full h-full" />
-      <span class="font-bold text-xl">{{ item.text }}</span>
+      <!-- NODE: Vite 에서 권장하는 image url 동적으로 가져오는 방법 -->
+      <img v-if="item.isIcon" :src="getImageUrl(item.iconName)" :alt="item.id" />
+      <span v-else class="font-bold text-xl">{{ item.text }}</span>
     </button>
   </NodeToolbar>
   <Handle v-if="nodeType !== 'output'" type="source" :position="Position.Right" />

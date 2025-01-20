@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import CloseIcon from "@/assets/images/icon/closIcon.vue";
 const props = defineProps({
   selectedNode: {
     type: Node,
@@ -21,7 +20,7 @@ const isOpenBanner = computed(() => {
   >
     <div class="close-button-wrapper">
       <button @click="$emit('close')" data-dismiss-target="#bottom-banner" type="button" class="close-button">
-        <CloseIcon class="w-3 h-3"></CloseIcon>
+        <img src="@/assets/images/icon/close.svg" alt="close" />
       </button>
     </div>
     <!-- TODO: Selected Node Information -->
@@ -49,6 +48,10 @@ const isOpenBanner = computed(() => {
 
 .close-button {
   @apply w-7 h-7 text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 dark:hover:bg-gray-600 dark:hover:text-white flex justify-center items-center;
+}
+
+.close-button img {
+  @apply w-3 h-3;
 }
 
 .banner-content {
