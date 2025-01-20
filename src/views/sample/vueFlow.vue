@@ -85,6 +85,19 @@ const onConnect = (params: ConnectParams) => {
 };
 
 /**
+ * Toolbar Click Test
+ * - Node delete
+ * - Open modal
+ * - Edit node label
+ * - Edit edges and handles UI
+ */
+const onToolbarClick = ({ id }) => {
+  // TODO: id 값에 따라 action 처리
+  // delete: node delete, info: open the node info modal, edit: node label edit, start: enable edge animations and change the handle color.
+  alert("TOOLBAR CLICK! ACTION = " + id);
+};
+
+/**
  * Bottom Banner Close
  */
 const closeBanner = () => {
@@ -121,7 +134,7 @@ const closeBanner = () => {
       </Panel>
       <MiniMap pannable zoomable maskColor="#aaa" />
       <template #node-custom="customNodeProps">
-        <CustomNode :data="customNodeProps.data" />
+        <CustomNode :data="customNodeProps.data" @onToolbarClick="onToolbarClick" />
       </template>
       <template #edge-custom="customEdgeProps">
         <CustomEdge
