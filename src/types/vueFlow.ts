@@ -7,6 +7,7 @@ export interface CustomNode {
 
 export interface CustomEdge {
   id: string; // 연결 고유 ID
+  type: string; // 연결 타입
   source: string; // 연결의 시작 노드 ID
   target: string; // 연결의 끝 노드 ID
   animated?: boolean; // 애니메이션 적용 여부
