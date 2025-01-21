@@ -1,23 +1,22 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import type { PropType } from "vue";
 import type { Node } from "@vue-flow/core";
 
 const props = defineProps({
+  isOpenBanner: {
+    type: Boolean,
+    default: false
+  },
   selectedNode: {
     type: Object as PropType<Node | null>,
     required: false
   }
 });
-
-const isOpenBanner = computed(() => {
-  return !!props.selectedNode;
-});
 </script>
 
 <template>
   <div
-    :class="{ 'translate-y-full': !isOpenBanner, 'translate-y-0': isOpenBanner }"
+    :class="{ 'translate-y-full': !props.isOpenBanner, 'translate-y-0': isOpenBanner }"
     tabindex="-1"
     class="bottom-banner"
   >

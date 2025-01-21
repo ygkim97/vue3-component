@@ -23,6 +23,13 @@ export const useVueFlowStore = defineStore("vueFlow", () => {
     nodes.push(node);
   };
 
+  const updateNode = (updatedNode: CustomNode) => {
+    const nodeIndex = nodes.findIndex((node) => node.id === updatedNode.id);
+    if (nodeIndex !== -1) {
+      nodes[nodeIndex] = { ...nodes[nodeIndex], ...updatedNode };
+    }
+  };
+
   const addEdge = (edge: CustomEdge) => {
     edges.push(edge);
   };
@@ -32,5 +39,5 @@ export const useVueFlowStore = defineStore("vueFlow", () => {
     edges.splice(0, edges.length, ...updatedEdges);
   };
 
-  return { nodes, edges, getJsonData, resetAll, addNode, addEdge, removeEdge };
+  return { nodes, edges, getJsonData, resetAll, addNode, updateNode, addEdge, removeEdge };
 });

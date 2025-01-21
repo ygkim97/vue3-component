@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { storeToRefs } from "pinia";
+import type { CustomNode as CustomNodeType } from "@/types/vueFlow.ts";
 import { VueFlow, Panel, useVueFlow } from "@vue-flow/core";
 import type { Node, Connection } from "@vue-flow/core";
 import { ControlButton, Controls } from "@vue-flow/controls";
@@ -17,15 +18,15 @@ import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
 const { getSelectedNodes } = useVueFlow();
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 const vueFlowStore = useVueFlowStore();
-const { resetAll, getJsonData: fetchJsonData, addNode, addEdge, removeEdge } = vueFlowStore;
+const { resetAll, getJsonData: fetchJsonData, addNode, updateNode, addEdge, removeEdge } = vueFlowStore;
 const { nodes, edges } = storeToRefs(vueFlowStore);
 
-const openNodeInfo = ref<Node | null>(null);
+const selectedNode = ref<Node | null>(null);
+const isOpenBanner = ref<boolean>(false);
 
 watch(getSelectedNodes, ([node]) => {
-  if (!node) {
-    closeBanner();
-  }
+  selectedNode.value = node || null;
+  if (!node) closeBanner();
 });
 
 /**
@@ -95,7 +96,7 @@ const onToolbarClick = ({ id }: { id: string }): void => {
   // delete: node delete, info: open the node info modal, edit: node label edit, start: enable edge animations and change the handle color.
 
   if (id === "info") {
-    openNodeInfo.value = getSelectedNodes.value[0];
+    isOpenBanner.value = true;
   } else {
     alert("TOOLBAR CLICK! ACTION = " + id);
   }
@@ -105,7 +106,18 @@ const onToolbarClick = ({ id }: { id: string }): void => {
  * Bottom Banner Close
  */
 const closeBanner = () => {
-  openNodeInfo.value = null;
+  isOpenBanner.value = false;
+};
+
+/**
+ * Node Update
+ */
+const nodeDragStop = ({ node }: { node: Node }) => {
+  const { id, type, data } = selectedNode.value as CustomNodeType;
+  const { position } = node;
+
+  const updatedNode = { id, type, position, data };
+  updateNode(updatedNode);
 };
 </script>
 
@@ -126,6 +138,7 @@ const closeBanner = () => {
       @dragleave="onDragLeave"
       :snap-to-grid="true"
       :snap-grid="[200, 100]"
+      @nodeDragStop="nodeDragStop"
     >
       <DropzoneBackground
         :style="{
@@ -161,7 +174,7 @@ const closeBanner = () => {
         <ControlButton title="test button" @click="onControlButton">T</ControlButton>
       </Controls>
     </VueFlow>
-    <BottomBanner :selectedNode="openNodeInfo" @close="closeBanner"></BottomBanner>
+    <BottomBanner :isOpenBanner="isOpenBanner" :selectedNode="selectedNode" @close="closeBanner"></BottomBanner>
   </div>
 </template>
 
