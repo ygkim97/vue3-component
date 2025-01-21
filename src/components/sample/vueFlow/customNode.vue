@@ -19,10 +19,6 @@ const toolbarItemList = [
 
 const nodeType = ref(props.data?.type);
 const nodeLabel = ref(props.data?.label);
-
-function getImageUrl(name) {
-  return new URL(`/src/assets/images/icon/${name}.svg`, import.meta.url).href;
-}
 </script>
 
 <template>
@@ -35,8 +31,7 @@ function getImageUrl(name) {
       :class="{ selected: item.id === data.item?.id }"
       @click="$emit('onToolbarClick', item)"
     >
-      <!-- NODE: Vite 에서 권장하는 image url 동적으로 가져오는 방법 -->
-      <img v-if="item.isIcon" :src="getImageUrl(item.iconName)" :alt="item.id" />
+      <svg-icon v-if="item.isIcon" :name="item.iconName" class="toolbar-icon"></svg-icon>
       <span v-else class="font-bold text-xl">{{ item.text }}</span>
     </button>
   </NodeToolbar>
@@ -54,7 +49,7 @@ function getImageUrl(name) {
   @apply border-2 border-blue-900 rounded-full text-blue-900 flex justify-center items-center w-8 h-8 cursor-pointer p-1.5;
 }
 
-.vue-flow__node-toolbar button svg {
+.vue-flow__node-toolbar button > .toolbar-icon {
   @apply w-4 h-4;
 }
 

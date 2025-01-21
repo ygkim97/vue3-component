@@ -66,7 +66,7 @@ watch(getSelectedEdges, ([edges]) => {
       }"
     >
       <button class="edge-delete-button" @click="$emit('removeEdge', id)">
-        <img src="@/assets/images/icon/close.svg" alt="close" />
+        <svg-icon name="close" class="close-icon"></svg-icon>
       </button>
     </div>
   </EdgeLabelRenderer>
@@ -77,7 +77,7 @@ watch(getSelectedEdges, ([edges]) => {
   @apply flex bg-blue-900 text-white p-1 rounded-full;
 }
 
-.edge-delete-button img {
+.edge-delete-button .close-icon {
   @apply w-[6px] h-[6px];
 }
 </style>

@@ -23,7 +23,7 @@ const isOpenBanner = computed(() => {
   >
     <div class="close-button-wrapper">
       <button @click="$emit('close')" data-dismiss-target="#bottom-banner" type="button" class="close-button">
-        <img src="@/assets/images/icon/close.svg" alt="close" />
+        <svg-icon name="close"></svg-icon>
       </button>
     </div>
     <!-- TODO: Selected Node Information -->

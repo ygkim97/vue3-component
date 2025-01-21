@@ -46,8 +46,7 @@ onMounted(() => {
         <button @click="toggleAccordion(item.id)" class="vue-flow__accordion-header">
           <span class="vue-flow__accordion-text">{{ item.label }}</span>
           <span class="vue-flow__accordion-icon">
-            <img v-if="accordionState[item.id]" src="@/assets/images/icon/arrow-up.svg" alt="open" />
-            <img v-else src="@/assets/images/icon/arrow-down.svg" alt="hide" />
+            <svg-icon :name="accordionState[item.id] ? 'arrow-up' : 'arrow-down'"></svg-icon>
           </span>
         </button>
         <div
