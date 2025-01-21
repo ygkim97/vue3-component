@@ -91,7 +91,7 @@ const onConnect = (params: Connection) => {
  * - Edit node label
  * - Edit edges and handles UI
  */
-const onToolbarClick = ({ id }: { id: string }) => {
+const onToolbarClick = ({ id }: { id: string }): void => {
   // TODO: id 값에 따라 action 처리
   // delete: node delete, info: open the node info modal, edit: node label edit, start: enable edge animations and change the handle color.
   alert("TOOLBAR CLICK! ACTION = " + id);
@@ -138,6 +138,7 @@ const closeBanner = () => {
       <Panel class="panel-button-group" position="top-left">
         <button type="button" @click="onPanelButton">Panel</button>
       </Panel>
+      <!-- TODO: warm console log -->
       <MiniMap pannable zoomable maskColor="#aaa" />
       <template #node-custom="customNodeProps">
         <CustomNode :data="customNodeProps.data" @onToolbarClick="onToolbarClick" />

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, defineEmits } from "vue";
 import { Handle, Position } from "@vue-flow/core";
 import { NodeToolbar } from "@vue-flow/node-toolbar";
 
@@ -9,6 +9,10 @@ const props = defineProps({
     required: true
   }
 });
+
+defineEmits<{
+  (e: "onToolbarClick", item: { id: string }): void;
+}>();
 
 const toolbarItemList = [
   { id: "delete", isIcon: true, iconName: "close" },

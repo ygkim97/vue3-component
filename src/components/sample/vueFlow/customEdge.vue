@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, defineEmits } from "vue";
 import { BaseEdge, EdgeLabelRenderer, getBezierPath, useVueFlow } from "@vue-flow/core";
 
 const { getSelectedEdges } = useVueFlow();
@@ -42,6 +42,10 @@ const props = defineProps({
     required: false
   }
 });
+
+defineEmits<{
+  (e: "removeEdge", id: string): void;
+}>();
 
 const selectedEdgeId = ref<string>("");
 
