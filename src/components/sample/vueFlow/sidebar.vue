@@ -105,7 +105,7 @@ onMounted(() => {
 
 <style>
 .vue-flow__sidebar {
-  @apply w-[25vw] border-r-2 border-gray-200 grid grid-rows-[auto,1fr];
+  @apply w-[30vw] border-r-2 border-gray-200 grid grid-rows-[auto,1fr];
 }
 
 .vue-flow__sidebar-title {
@@ -148,10 +148,10 @@ onMounted(() => {
 }
 
 .vue-flow__button-group button {
-  @apply w-36 h-10 text-white bg-blue-900 hover:bg-blue-900/90 focus:ring-4 focus:outline-none focus:ring-blue-900/50 font-medium rounded-lg text-sm px-5 py-2.5 dark:focus:ring-blue-900/55 me-2 mb-2 justify-center;
+  @apply w-32 h-10 text-white text-xs bg-blue-900 hover:bg-blue-900/90 font-medium rounded-lg;
 }
 
 .vue-flow__drag-group div {
-  @apply w-36 h-10 rounded-full border-2 border-blue-900 flex items-center justify-center text-sm font-medium text-blue-900 cursor-grab !important;
+  @apply w-32 h-10 rounded-full border-2 border-blue-900 flex items-center justify-center text-xs font-medium text-blue-900 cursor-grab !important;
 }
 </style>
