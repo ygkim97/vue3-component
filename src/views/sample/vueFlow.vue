@@ -109,6 +109,7 @@ const closeBanner = () => {
 <template>
   <div class="vue-flow-wrapper" @drop="onDrop">
     <Sidebar @getJsonData="getJsonData" @createNode="createNode" @resetNode="resetNode" />
+    <!-- TODO: 해당 좌표에 이미 노드가 존재할 경우 처리 -->
     <VueFlow
       class="vue-flow"
       fit-view-on-init
@@ -120,6 +121,8 @@ const closeBanner = () => {
       @connect="onConnect"
       @dragover="onDragOver"
       @dragleave="onDragLeave"
+      :snap-to-grid="true"
+      :snap-grid="[200, 100]"
     >
       <DropzoneBackground
         :style="{
