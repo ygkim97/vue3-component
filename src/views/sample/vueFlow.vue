@@ -14,19 +14,18 @@ import BottomBanner from "@/components/sample/vueFlow/bottomBanner.vue";
 import useDragAndDrop from "@/components/sample/vueFlow/dragAndDrop.ts";
 import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
 
-const { getSelectedNodes, setNodes } = useVueFlow();
+const { getSelectedNodes } = useVueFlow();
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 const vueFlowStore = useVueFlowStore();
 const { resetAll, getJsonData: fetchJsonData, addNode, addEdge, removeEdge } = vueFlowStore;
 const { nodes, edges } = storeToRefs(vueFlowStore);
 
-const selectedNode = ref<Node | null>(null);
+const openNodeInfo = ref<Node | null>(null);
 
-/**
- * Bottom Banner Open
- */
 watch(getSelectedNodes, ([node]) => {
-  selectedNode.value = node || null;
+  if (!node) {
+    closeBanner();
+  }
 });
 
 /**
@@ -94,18 +93,19 @@ const onConnect = (params: Connection) => {
 const onToolbarClick = ({ id }: { id: string }): void => {
   // TODO: id 값에 따라 action 처리
   // delete: node delete, info: open the node info modal, edit: node label edit, start: enable edge animations and change the handle color.
-  alert("TOOLBAR CLICK! ACTION = " + id);
+
+  if (id === "info") {
+    openNodeInfo.value = getSelectedNodes.value[0];
+  } else {
+    alert("TOOLBAR CLICK! ACTION = " + id);
+  }
 };
 
 /**
  * Bottom Banner Close
  */
 const closeBanner = () => {
-  const selectedId = selectedNode.value?.id;
-  if (!selectedId) return;
-
-  setNodes((nodes) => nodes.map((node) => (node.id === selectedId ? { ...node, selected: false } : node)));
-  selectedNode.value = null;
+  openNodeInfo.value = null;
 };
 </script>
 
@@ -161,7 +161,7 @@ const closeBanner = () => {
         <ControlButton title="test button" @click="onControlButton">T</ControlButton>
       </Controls>
     </VueFlow>
-    <BottomBanner :selectedNode="selectedNode" @close="closeBanner"></BottomBanner>
+    <BottomBanner :selectedNode="openNodeInfo" @close="closeBanner"></BottomBanner>
   </div>
 </template>
 
