@@ -1,10 +1,11 @@
 import { reactive } from "vue";
 import { defineStore } from "pinia";
 import flowData from "./vueFlow.json";
+import type { CustomNode, CustomEdge } from "@/types/vueFlow.ts";
 
 export const useVueFlowStore = defineStore("vueFlow", () => {
-  const nodes = reactive<Node[]>([]);
-  const edges = reactive<Edge[]>([]);
+  const nodes = reactive<CustomNode[]>([]);
+  const edges = reactive<CustomEdge[]>([]);
 
   const resetAll = () => {
     nodes.length = 0;
@@ -18,11 +19,11 @@ export const useVueFlowStore = defineStore("vueFlow", () => {
     edges.push(...flowData.edges);
   };
 
-  const addNode = (node: Node) => {
+  const addNode = (node: CustomNode) => {
     nodes.push(node);
   };
 
-  const addEdge = (edge: Edge) => {
+  const addEdge = (edge: CustomEdge) => {
     edges.push(edge);
   };
 

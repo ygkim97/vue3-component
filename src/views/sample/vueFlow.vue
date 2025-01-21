@@ -2,6 +2,7 @@
 import { ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { VueFlow, Panel, useVueFlow } from "@vue-flow/core";
+import type { Node, Connection } from "@vue-flow/core";
 import { ControlButton, Controls } from "@vue-flow/controls";
 import { MiniMap } from "@vue-flow/minimap";
 
@@ -11,7 +12,6 @@ import Sidebar from "@/components/sample/vueFlow/sidebar.vue";
 import DropzoneBackground from "@/components/sample/vueFlow/dropzoneBackground.vue";
 import BottomBanner from "@/components/sample/vueFlow/bottomBanner.vue";
 import useDragAndDrop from "@/components/sample/vueFlow/dragAndDrop.ts";
-import type { ConnectParams } from "@/types/vueFlow.ts";
 import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
 
 const { getSelectedNodes, setNodes } = useVueFlow();
@@ -20,7 +20,7 @@ const vueFlowStore = useVueFlowStore();
 const { resetAll, getJsonData: fetchJsonData, addNode, addEdge, removeEdge } = vueFlowStore;
 const { nodes, edges } = storeToRefs(vueFlowStore);
 
-const selectedNode = ref<Node>(null);
+const selectedNode = ref<Node | null>(null);
 
 /**
  * Bottom Banner Open
@@ -75,7 +75,7 @@ const onControlButton = () => {
 /**
  * Enable node connections
  */
-const onConnect = (params: ConnectParams) => {
+const onConnect = (params: Connection) => {
   addEdge({
     id: `e${params.source}->${params.target}`,
     type: "custom",
@@ -91,7 +91,7 @@ const onConnect = (params: ConnectParams) => {
  * - Edit node label
  * - Edit edges and handles UI
  */
-const onToolbarClick = ({ id }) => {
+const onToolbarClick = ({ id }: { id: string }) => {
   // TODO: id 값에 따라 action 처리
   // delete: node delete, info: open the node info modal, edit: node label edit, start: enable edge animations and change the handle color.
   alert("TOOLBAR CLICK! ACTION = " + id);
@@ -101,7 +101,10 @@ const onToolbarClick = ({ id }) => {
  * Bottom Banner Close
  */
 const closeBanner = () => {
-  setNodes((nodes) => nodes.map((node) => (node.id === selectedNode.value.id ? { ...node, selected: false } : node)));
+  const selectedId = selectedNode.value?.id;
+  if (!selectedId) return;
+
+  setNodes((nodes) => nodes.map((node) => (node.id === selectedId ? { ...node, selected: false } : node)));
   selectedNode.value = null;
 };
 </script>

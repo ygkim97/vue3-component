@@ -1,6 +1,7 @@
 import { useVueFlow } from "@vue-flow/core";
 import { ref, watch } from "vue";
 import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
+import type { CustomNode } from "@/types/vueFlow.ts";
 
 // TODO: 재사용가능하도록 수정하여 /composables 디렉토리로 이동
 // TODO: 드롭 시, 격자에 맞춰 배치되도록 설정
@@ -27,14 +28,14 @@ const state = {
 export default function useDragAndDrop() {
   const { draggedType, isDragOver, isDragging } = state;
 
-  const { addNodes, screenToFlowCoordinate, onNodesInitialized, updateNode } = useVueFlow();
+  const { screenToFlowCoordinate, onNodesInitialized, updateNode } = useVueFlow();
   const { addNode } = useVueFlowStore();
 
   watch(isDragging, (dragging) => {
     document.body.style.userSelect = dragging ? "none" : "";
   });
 
-  const onDragStart = (event, type) => {
+  const onDragStart = (event: any, type: string | null) => {
     if (event.dataTransfer) {
       event.dataTransfer.setData("application/vueflow", type);
       event.dataTransfer.effectAllowed = "move";
@@ -83,21 +84,27 @@ export default function useDragAndDrop() {
 
     // NODE: x, y 좌표를 격자 크기에 맞게 정렬
     // TODO: 해당 좌표에 이미 노드가 존재할 경우 처리
-    const alignedPosition = ["x", "y"].reduce((acc, coordinate) => {
-      const gridSize = GRID_SIZE[coordinate.toUpperCase()];
-      const value = position[coordinate];
-      acc[coordinate] = Math.round(value / gridSize) * gridSize;
-      return acc;
-    }, {});
+    const alignedPosition = ["x", "y"].reduce(
+      (acc, coordinate) => {
+        const gridSize = GRID_SIZE[coordinate.toUpperCase() as keyof typeof GRID_SIZE];
+        const value = position[coordinate as keyof typeof position];
+        acc[coordinate as "x" | "y"] = Math.round(value / gridSize) * gridSize;
+        return acc;
+      },
+      {} as { x: number; y: number }
+    );
 
     const nodeId = getId();
 
-    const newNode = {
+    const newNode: CustomNode = {
       id: nodeId,
       type: "custom",
       position: alignedPosition,
       data: { type: draggedType.value, label: nodeId }
     };
+
+    // NOTE: vue store 에 추가된 node 저장
+    addNode(newNode);
 
     /**
      * Align node position after drop, so it's centered to the mouse
@@ -117,11 +124,6 @@ export default function useDragAndDrop() {
 
       off();
     });
-
-    addNodes(newNode);
-
-    // NOTE: vue store 에 추가된 node 저장
-    addNode(newNode);
   };
 
   return {
