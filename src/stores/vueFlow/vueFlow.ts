@@ -30,14 +30,22 @@ export const useVueFlowStore = defineStore("vueFlow", () => {
     }
   };
 
+  const removeNode = (nodeId, connectedEdges) => {
+    nodes.splice(0, nodes.length, ...nodes.filter(({ id }) => id !== nodeId));
+
+    // NOTE: 노드와 연결되어 있는 엣지 제거
+    const connectedEdgeIds = connectedEdges.map(({ id }) => id);
+    removeEdges(connectedEdgeIds);
+  };
+
   const addEdge = (edge: CustomEdge) => {
     edges.push(edge);
   };
 
-  const removeEdge = (removeId: string) => {
-    const updatedEdges = edges.filter(({ id }) => id !== removeId);
-    edges.splice(0, edges.length, ...updatedEdges);
+  const removeEdges = (removeIds: string | string[]) => {
+    const idsToRemove = Array.isArray(removeIds) ? removeIds : [removeIds];
+    edges.splice(0, edges.length, ...edges.filter(({ id }) => !idsToRemove.includes(id)));
   };
 
-  return { nodes, edges, getJsonData, resetAll, addNode, updateNode, addEdge, removeEdge };
+  return { nodes, edges, getJsonData, resetAll, addNode, updateNode, removeNode, addEdge, removeEdges };
 });

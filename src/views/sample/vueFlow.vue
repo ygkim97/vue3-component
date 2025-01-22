@@ -15,10 +15,10 @@ import BottomBanner from "@/components/sample/vueFlow/bottomBanner.vue";
 import useDragAndDrop from "@/components/sample/vueFlow/dragAndDrop.ts";
 import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
 
-const { getSelectedNodes } = useVueFlow();
+const { getSelectedNodes, getConnectedEdges } = useVueFlow();
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 const vueFlowStore = useVueFlowStore();
-const { resetAll, getJsonData: fetchJsonData, addNode, updateNode, addEdge, removeEdge } = vueFlowStore;
+const { resetAll, getJsonData: fetchJsonData, addNode, updateNode, removeNode, addEdge, removeEdges } = vueFlowStore;
 const { nodes, edges } = storeToRefs(vueFlowStore);
 
 const selectedNode = ref<Node | null>(null);
@@ -95,7 +95,12 @@ const onToolbarClick = ({ id }: { id: string }): void => {
   // TODO: id 값에 따라 action 처리
   // delete: node delete, info: open the node info modal, edit: node label edit, start: enable edge animations and change the handle color.
 
-  if (id === "info") {
+  if (id === "delete") {
+    if (confirm("노드를 삭제하시겠습니까?")) {
+      const selectedNodeId = selectedNode.value.id;
+      removeNode(selectedNodeId, getConnectedEdges(selectedNodeId));
+    }
+  } else if (id === "info") {
     isOpenBanner.value = true;
   } else {
     alert("TOOLBAR CLICK! ACTION = " + id);
@@ -167,7 +172,7 @@ const nodeDragStop = ({ node }: { node: Node }) => {
           :target-position="customEdgeProps.targetPosition"
           :marker-end="customEdgeProps.markerEnd"
           :style="customEdgeProps.style"
-          @removeEdge="removeEdge"
+          @removeEdge="removeEdges"
         />
       </template>
       <Controls position="top-right">
