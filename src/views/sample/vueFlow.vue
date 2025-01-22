@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { storeToRefs } from "pinia";
-import type { CustomNode as CustomNodeType } from "@/types/vueFlow.ts";
 import { VueFlow, Panel, useVueFlow } from "@vue-flow/core";
 import type { Node, Connection } from "@vue-flow/core";
 import { ControlButton, Controls } from "@vue-flow/controls";
@@ -15,7 +14,7 @@ import BottomBanner from "@/components/sample/vueFlow/bottomBanner.vue";
 import useDragAndDrop from "@/components/sample/vueFlow/dragAndDrop.ts";
 import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
 
-const { getSelectedNodes, getConnectedEdges } = useVueFlow();
+const { getSelectedNodes, getConnectedEdges, getIntersectingNodes, updateNode: setNode } = useVueFlow();
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 const vueFlowStore = useVueFlowStore();
 const { resetAll, getJsonData: fetchJsonData, addNode, updateNode, removeNode, addEdge, removeEdges } = vueFlowStore;
@@ -117,12 +116,16 @@ const closeBanner = () => {
 /**
  * Node Update
  */
-const nodeDragStop = ({ node }: { node: Node }) => {
-  const { id, type, data } = selectedNode.value as CustomNodeType;
-  const { position } = node;
+const nodeDragStop = ({ node }) => {
+  const { id, type, data, position } = node;
+  const originPosition = nodes.value.find((data) => data.id === id)?.position;
 
-  const updatedNode = { id, type, position, data };
-  updateNode(updatedNode);
+  const intersections = getIntersectingNodes(node);
+  const intersectionIds = intersections.map((intersection) => intersection.id);
+
+  const updatedNode = { id, type, position: intersectionIds.length > 0 ? originPosition : position, data };
+  updateNode(updatedNode); // store node update
+  setNode(id, updatedNode); // NOTE: Vue Flow 에서 상태 변화를 감지하도록 노드 강제 업데이트
 };
 </script>
 
@@ -213,5 +216,9 @@ const nodeDragStop = ({ node }: { node: Node }) => {
 /* Controls Custom */
 .vue-flow__controls {
   @apply flex;
+}
+
+.test {
+  background-color: #f15a16 !important;
 }
 </style>
