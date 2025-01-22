@@ -12,6 +12,12 @@ const props = defineProps({
     required: false
   }
 });
+
+const contents = [
+  { id: "selectedNode", title: "Selected Node Data", data: {} },
+  { id: "connectedNodes", title: "Node data up to the selected node", data: {} },
+  { id: "connectedEdges", title: "Edge data up to the selected node", data: {} }
+];
 </script>
 
 <template>
@@ -20,20 +26,25 @@ const props = defineProps({
     tabindex="-1"
     class="bottom-banner"
   >
-    <div class="close-button-wrapper">
+    <div class="bottom-banner__header">
+      <div class="bottom-banner__title">Selected Node Information</div>
       <button @click="$emit('close')" data-dismiss-target="#bottom-banner" type="button" class="close-button">
         <svg-icon name="close"></svg-icon>
       </button>
     </div>
     <!-- TODO: Selected Node Information -->
-    <div class="banner-content">
-      <div class="title">Selected Node Information</div>
+    <div class="bottom-banner__content">
       <div class="description">
-        <ul>
-          <li>Selected Node Data</li>
-          <li>Node data up to the selected node</li>
-          <li>Edge data up to the selected node</li>
-        </ul>
+        <div v-for="content in contents" :key="content.id" class="description-box">
+          <h5 class="description-box__title">
+            {{ content.title }}
+          </h5>
+          <p class="description-box__content">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. A accusamus assumenda blanditiis dicta dolor
+            dolores doloribus expedita in incidunt ipsam nam porro quae qui quis quod repellendus, tempore veritatis
+            vitae!
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -44,8 +55,12 @@ const props = defineProps({
   @apply fixed w-full h-80 bottom-0 start-0 z-50 grid p-4 border-t border-gray-200 bg-gray-50 shadow-inner grid-rows-[auto,1fr] transition-transform duration-300;
 }
 
-.close-button-wrapper {
-  @apply flex justify-end;
+.bottom-banner__header {
+  @apply flex justify-between;
+}
+
+.bottom-banner__title {
+  @apply text-2xl text-slate-500;
 }
 
 .close-button {
@@ -56,15 +71,23 @@ const props = defineProps({
   @apply w-3 h-3;
 }
 
-.banner-content {
+.bottom-banner__content {
   @apply flex flex-col justify-center items-center text-2xl text-slate-500;
 }
 
-.banner-content > .title {
-  @apply pb-2;
+.description {
+  @apply text-sm grid grid-cols-3 gap-10;
 }
 
-.banner-content > .description {
-  @apply text-sm;
+.description-box {
+  @apply min-h-[220px] p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-600 dark:border-gray-500 dark:hover:bg-gray-500;
+}
+
+.description-box__title {
+  @apply mb-2 text-2xl font-bold tracking-tight dark:text-white;
+}
+
+.description-box__content {
+  @apply font-normal text-gray-700 dark:text-gray-400;
 }
 </style>
