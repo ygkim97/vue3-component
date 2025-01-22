@@ -29,7 +29,7 @@ export default function useDragAndDrop() {
   const { draggedType, isDragOver, isDragging } = state;
 
   const { screenToFlowCoordinate, onNodesInitialized, updateNode } = useVueFlow();
-  const { addNode } = useVueFlowStore();
+  const { addNode, nodes } = useVueFlowStore();
 
   watch(isDragging, (dragging) => {
     document.body.style.userSelect = dragging ? "none" : "";
@@ -102,6 +102,15 @@ export default function useDragAndDrop() {
       position: alignedPosition,
       data: { type: draggedType.value, label: nodeId }
     };
+
+    const getNodeByPosition = (position: { x: number; y: number }) => {
+      return nodes.find((node) => node.position.x === position.x && node.position.y === position.y) || null;
+    };
+
+    if (getNodeByPosition(alignedPosition)) {
+      id -= 1;
+      return;
+    }
 
     // NOTE: vue store 에 추가된 node 저장
     addNode(newNode);
