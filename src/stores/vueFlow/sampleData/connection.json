@@ -1,0 +1,100 @@
+{
+  "nodes": [
+    {
+      "id": "1",
+      "type": "custom",
+      "position": { "x": 0, "y": 0 },
+      "data": { "type": "input", "label": "Node 1" }
+    },
+    {
+      "id": "2",
+      "type": "custom",
+      "position": { "x": 200, "y": 0 },
+      "data": { "type": "default", "label": "Node 2" }
+    },
+    {
+      "id": "3",
+      "type": "custom",
+      "position": { "x": 400, "y": 0 },
+      "data": { "type": "default", "label": "Node 3" }
+    },
+    {
+      "id": "4",
+      "type": "custom",
+      "position": { "x": 600, "y": 0 },
+      "data": { "type": "output", "label": "Node 4" }
+    },
+    {
+      "id": "5",
+      "type": "custom",
+      "position": { "x": 0, "y": 100 },
+      "data": { "type": "default", "label": "Node 5" }
+    },
+    {
+      "id": "6",
+      "type": "custom",
+      "position": { "x": 200, "y": 100 },
+      "data": { "type": "default", "label": "Node 6" }
+    },
+    {
+      "id": "7",
+      "type": "custom",
+      "position": { "x": 0, "y": 200 },
+      "data": { "type": "default", "label": "Node 7" }
+    },
+    {
+      "id": "8",
+      "type": "custom",
+      "position": { "x": 200, "y": 200 },
+      "data": { "type": "default", "label": "Node 8" }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1->2",
+      "type": "custom",
+      "source": "1",
+      "target": "2"
+    },
+    {
+      "id": "e2->3",
+      "type": "custom",
+      "source": "2",
+      "target": "3",
+      "animated": false
+    },
+    {
+      "id": "e3->4",
+      "type": "custom",
+      "source": "3",
+      "target": "4",
+      "data": {
+        "hello": "world"
+      }
+    },
+    {
+      "id": "e5->6",
+      "type": "custom",
+      "source": "5",
+      "target": "6"
+    },
+    {
+      "id": "e6->3",
+      "type": "custom",
+      "source": "6",
+      "target": "3"
+    },
+    {
+      "id": "e7->6",
+      "type": "custom",
+      "source": "7",
+      "target": "6"
+    },
+    {
+      "id": "e8->3",
+      "type": "custom",
+      "source": "8",
+      "target": "3"
+    }
+  ]
+}
