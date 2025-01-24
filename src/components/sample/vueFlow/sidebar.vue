@@ -59,7 +59,8 @@ onMounted(() => {
         >
           <div class="vue-flow__accordion-body">
             <div v-if="item.id === 'nodeDataControls'" class="vue-flow__button-group">
-              <button type="button" @click="$emit('getJsonData')">Get JSON Data</button>
+              <button type="button" @click="$emit('getJsonData', 'default')">Get JSON Data 1</button>
+              <button type="button" @click="$emit('getJsonData', 'connection')">Get JSON Data 2</button>
               <button type="button" @click="$emit('createNode')">Create Node</button>
               <button type="button" @click="$emit('resetNode')">Reset Node</button>
             </div>

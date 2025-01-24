@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, reactive } from "vue";
 import { storeToRefs } from "pinia";
 import { VueFlow, Panel, useVueFlow } from "@vue-flow/core";
-import type { Node, Connection } from "@vue-flow/core";
+import type { Connection } from "@vue-flow/core";
 import { ControlButton, Controls } from "@vue-flow/controls";
 import { MiniMap } from "@vue-flow/minimap";
 
@@ -14,26 +14,34 @@ import BottomBanner from "@/components/sample/vueFlow/bottomBanner.vue";
 import useDragAndDrop from "@/components/sample/vueFlow/dragAndDrop.ts";
 import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
 
-const { getSelectedNodes, getConnectedEdges, getIntersectingNodes, updateNode: setNode } = useVueFlow();
+const { getSelectedNodes, getConnectedEdges, getIntersectingNodes, updateNode: setNode, getIncomers } = useVueFlow();
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 const vueFlowStore = useVueFlowStore();
 const { resetAll, getJsonData: fetchJsonData, addNode, updateNode, removeNode, addEdge, removeEdges } = vueFlowStore;
 const { nodes, edges } = storeToRefs(vueFlowStore);
 
-const selectedNode = ref<Node | null>(null);
 const isOpenBanner = ref<boolean>(false);
+const selectedNodeInfo = reactive<{ [key: string]: object | null }>({
+  selectedNode: null,
+  connectedNodes: null
+});
 
 watch(getSelectedNodes, ([node]) => {
-  selectedNode.value = node || null;
-  if (!node) closeBanner();
+  selectedNodeInfo.selectedNode = node || null;
+
+  if (node) {
+    setConnectionNodes();
+  } else {
+    closeBanner();
+  }
 });
 
 /**
  * Test if the JSON data is being rendered correctly
  */
-const getJsonData = () => {
+const getJsonData = (action: string) => {
   if (confirm("기존 노드가 초기화됩니다. 계속 진행하시겠습니까?")) {
-    fetchJsonData();
+    fetchJsonData(action);
   }
 };
 
@@ -127,6 +135,41 @@ const nodeDragStop = ({ node }) => {
   updateNode(updatedNode); // store node update
   setNode(id, updatedNode); // NOTE: Vue Flow 에서 상태 변화를 감지하도록 노드 강제 업데이트
 };
+
+const setConnectionNodes = () => {
+  // selected Node 에 연결된 nodes path list 가져오는 함수
+  const buildConnections = ({ currentPath = [], node, connectData, cnt }) => {
+    if (cnt === 0 && !connectData[0]) {
+      currentPath = [node];
+      connectData[cnt] = [node];
+    }
+
+    const incomingNodes = getIncomers(node.id);
+    incomingNodes.forEach((incomingNode, index) => {
+      if (index === 0) {
+        connectData[cnt].unshift(incomingNode);
+      } else {
+        connectData[++cnt] = [incomingNode, ...currentPath];
+      }
+      if (getIncomers(incomingNode.id).length > 0) {
+        cnt = buildConnections({ currentPath: [...connectData[cnt]], node: incomingNode, connectData, cnt });
+      }
+    });
+    return cnt;
+  };
+
+  const connectData = [];
+  if (getIncomers(selectedNodeInfo.selectedNode).length > 0) {
+    let cnt = 0;
+    cnt = buildConnections({ node: selectedNodeInfo.selectedNode, connectData, cnt });
+  }
+
+  selectedNodeInfo.connectedNodes = connectData;
+};
+
+const nodeClick = () => {
+  isOpenBanner.value = false;
+};
 </script>
 
 <template>
@@ -147,6 +190,7 @@ const nodeDragStop = ({ node }) => {
       :snap-to-grid="true"
       :snap-grid="[200, 100]"
       @nodeDragStop="nodeDragStop"
+      @nodeClick="nodeClick"
     >
       <DropzoneBackground
         :style="{
@@ -162,7 +206,7 @@ const nodeDragStop = ({ node }) => {
       <!-- TODO: warm console log -->
       <MiniMap pannable zoomable maskColor="#aaa" />
       <template #node-custom="customNodeProps">
-        <CustomNode :data="customNodeProps.data" @onToolbarClick="onToolbarClick" />
+        <CustomNode :data="customNodeProps.data" @onToolbarClick="onToolbarClick" @node-click="test" />
       </template>
       <template #edge-custom="customEdgeProps">
         <CustomEdge
@@ -182,7 +226,7 @@ const nodeDragStop = ({ node }) => {
         <ControlButton title="test button" @click="onControlButton">T</ControlButton>
       </Controls>
     </VueFlow>
-    <BottomBanner :isOpenBanner="isOpenBanner" :selectedNode="selectedNode" @close="closeBanner"></BottomBanner>
+    <BottomBanner :isOpenBanner="isOpenBanner" :selectedNodeInfo="selectedNodeInfo" @close="closeBanner"></BottomBanner>
   </div>
 </template>
 

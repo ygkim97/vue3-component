@@ -1,28 +1,95 @@
 <script setup lang="ts">
-import type { PropType } from "vue";
-import type { Node } from "@vue-flow/core";
+import { computed, ref, watch } from "vue";
+import { useVueFlow } from "@vue-flow/core";
+
+const { getConnectedEdges } = useVueFlow();
 
 const props = defineProps({
   isOpenBanner: {
     type: Boolean,
     default: false
   },
-  selectedNode: {
-    type: Object as PropType<Node | null>,
+  selectedNodeInfo: {
+    type: Object,
     required: false
   }
 });
 
-const contents = [
-  { id: "selectedNode", title: "Selected Node Data", data: {} },
-  { id: "connectedNodes", title: "Node data up to the selected node", data: {} },
-  { id: "connectedEdges", title: "Edge data up to the selected node", data: {} }
-];
+const isOpenSelectBox = ref<boolean>(false);
+const selectMenu = ref(null);
+const selectedPathIndex = ref<number>(0);
+const selectedPathBtnId = ref<string>("");
+const connectionData = ref(null);
+
+const contents = computed(() => {
+  const { selectedNode, connectedNodes } = props.selectedNodeInfo;
+  if (selectedNode === null) return [];
+
+  const { id, type, dimensions, position, data } = selectedNode;
+  return { selectedNode: { id, type, dimensions, position, data }, connectedNodes };
+});
+
+const selectedPath = computed(() => {
+  let connectedNodes = [];
+  if (contents.value?.connectedNodes) {
+    connectedNodes = contents.value?.connectedNodes[selectedPathIndex.value];
+  }
+  return connectedNodes;
+});
+
+watch(
+  () => props.isOpenBanner,
+  (isOpen: boolean) => {
+    if (!isOpen) {
+      selectedPathIndex.value = 0;
+      selectedPathBtnId.value = "node_0";
+    }
+  }
+);
+
+watch(
+  () => selectedPath.value,
+  (val) => {
+    if (val && val.length > 0) {
+      getConnectionData("node", 0);
+    }
+  }
+);
+
+const selectBoxClick = () => {
+  isOpenSelectBox.value = !isOpenSelectBox.value;
+  if (isOpenSelectBox.value) {
+    selectMenu.value.focus();
+  }
+};
+
+const getConnectionData = (connectType, nodeIndex) => {
+  const { id, type, dimensions, position, data } = selectedPath.value[nodeIndex];
+  selectedPathBtnId.value = `${connectType}_${nodeIndex}`;
+  if (connectType === "node") {
+    connectionData.value = { "NODE ID": id, type, dimensions, position, data };
+  } else if (connectType === "edge") {
+    const { id: nextNodeId } = selectedPath.value[nodeIndex + 1];
+    const {
+      id: edgeId,
+      type: edgeType,
+      source,
+      target,
+      data
+    } = getConnectedEdges(id)
+      .filter(({ source, target }) => {
+        return source === id && target === nextNodeId;
+      })
+      .shift();
+
+    connectionData.value = { "EDGE ID": edgeId, type: edgeType, source, target, data };
+  }
+};
 </script>
 
 <template>
   <div
-    :class="{ 'translate-y-full': !props.isOpenBanner, 'translate-y-0': isOpenBanner }"
+    :class="{ 'translate-y-full': !props.isOpenBanner, 'translate-y-0': props.isOpenBanner }"
     tabindex="-1"
     class="bottom-banner"
   >
@@ -32,18 +99,107 @@ const contents = [
         <svg-icon name="close"></svg-icon>
       </button>
     </div>
-    <!-- TODO: Selected Node Information -->
     <div class="bottom-banner__content">
       <div class="description">
-        <div v-for="content in contents" :key="content.id" class="description-box">
-          <h5 class="description-box__title">
-            {{ content.title }}
-          </h5>
-          <p class="description-box__content">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. A accusamus assumenda blanditiis dicta dolor
-            dolores doloribus expedita in incidunt ipsam nam porro quae qui quis quod repellendus, tempore veritatis
-            vitae!
-          </p>
+        <div class="selected-node-box">
+          <h5 class="selected-node__title">Selected Node Data</h5>
+          <div class="selected-node__content">
+            <!-- TODO: table component -->
+            <table>
+              <thead></thead>
+              <tbody>
+                <tr v-for="(data, key) in contents.selectedNode" :key="key">
+                  <th scope="row">
+                    {{ key.toString().toUpperCase() }}
+                  </th>
+                  <td>{{ data }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="connection-info-box">
+          <div class="flex justify-between">
+            <h5 class="connection-info__title">Selected Node Connection Data</h5>
+
+            <!-- TODO: selectebox component -->
+            <div class="grid grid-cols-2 gap-2 items-center">
+              <h5 class="text-end font-bold">PATH</h5>
+              <div class="relative w-64" @focusout="isOpenSelectBox != isOpenSelectBox">
+                <button
+                  class="w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 text-left focus:outline-none focus:ring focus:ring-indigo-200 focus:border-indigo-500"
+                  :disabled="!selectedPath"
+                  :class="selectedPath ? '' : 'bg-gray-200 text-gray-500 cursor-not-allowed opacity-50'"
+                  @click="selectBoxClick"
+                >
+                  <template class="flex justify-between text-gray-500">
+                    <span v-if="selectedPath" class="text-gray-500">PATH {{ selectedPathIndex + 1 }}</span>
+                    <span v-else>Path does not exist</span>
+                    <svg-icon :name="isOpenSelectBox ? 'arrow-up' : 'arrow-down'" class="w-3"></svg-icon>
+                  </template>
+                </button>
+                <div class="absolute z-20 w-full" ref="selectMenu" tabindex="-1" @focusout="isOpenSelectBox = false">
+                  <ul
+                    v-show="isOpenSelectBox"
+                    class="w-full mt-2 bg-white border border-gray-300 rounded-md shadow-lg overflow-hidden z-10"
+                  >
+                    <li v-for="(_, index) in contents.connectedNodes" :key="`path_${index}`">
+                      <button
+                        class="w-full h-full px-4 py-2 text-gray-500 hover:bg-gray-50 cursor-pointer overflow-hidden text-left"
+                        @mousedown="[(selectedPathIndex = index), (isOpenSelectBox = !isOpenSelectBox)]"
+                      >
+                        PATH {{ index + 1 }}
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="connection-info__content">
+            <ol class="grid my-auto" :class="selectedPath ? `grid-cols-${selectedPath.length}` : ''">
+              <li
+                v-for="(_, index) in selectedPath"
+                :key="index"
+                class="grid justify-center items-center grid-cols-[auto,1fr]"
+                style="transform: translateX(50%)"
+              >
+                <button
+                  @click="getConnectionData('node', index)"
+                  class="w-5 h-5 bg-gray-300 border-2 border-transparent rounded-full flex hover:bg-gray-500"
+                  :class="selectedPathBtnId === `node_${index}` ? 'bg-gray-600' : ''"
+                ></button>
+                <div
+                  v-if="selectedPath.length !== index + 1"
+                  class="w-full h-full cursor-pointer flex items-center group"
+                  @click="getConnectionData('edge', index)"
+                >
+                  <span
+                    class="w-full h-0.5 bg-gray-300 group-hover:bg-gray-500"
+                    :class="selectedPathBtnId === `edge_${index}` ? 'bg-gray-600' : ''"
+                  ></span>
+                </div>
+              </li>
+            </ol>
+            <div>
+              <table v-if="selectedPath">
+                <colgroup>
+                  <col class="w-1/4" />
+                  <col class="w-3/4" />
+                </colgroup>
+                <thead></thead>
+                <tbody>
+                  <tr v-for="(data, key) in connectionData" :key="key">
+                    <th scope="row">
+                      {{ key.toString().toUpperCase() }}
+                    </th>
+                    <td>{{ data }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div v-else class="no-data">데이터가 없습니다.</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -76,18 +232,86 @@ const contents = [
 }
 
 .description {
-  @apply text-sm grid grid-cols-3 gap-10;
+  @apply text-sm grid gap-10 grid-cols-[1fr,2fr];
 }
 
-.description-box {
-  @apply min-h-[220px] p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-600 dark:border-gray-500 dark:hover:bg-gray-500;
+.selected-node-box {
+  @apply min-h-[240px] max-h-[240px] p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-600 dark:border-gray-500;
 }
 
-.description-box__title {
+.selected-node__title {
   @apply mb-2 text-2xl font-bold tracking-tight dark:text-white;
 }
 
-.description-box__content {
-  @apply font-normal text-gray-700 dark:text-gray-400;
+.selected-node__content {
+  @apply relative overflow-x-auto overflow-y-scroll h-[85%];
+}
+
+.bottom-banner table {
+  @apply w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 h-full;
+}
+
+.bottom-banner table tr {
+  @apply bg-white border-b dark:bg-gray-800 dark:border-gray-700;
+}
+
+.bottom-banner table th {
+  @apply px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white;
+}
+
+.bottom-banner table td {
+  @apply px-6 py-2;
+}
+
+.connection-info-box {
+  @apply min-h-[240px] max-h-[240px] p-6;
+}
+
+.connection-info__title {
+  @apply mb-2 text-2xl font-bold tracking-tight;
+}
+
+.connection-info__content {
+  @apply w-full h-[90%] grid grid-rows-[1fr,3fr];
+}
+
+.connection-info__content > div {
+  @apply overflow-y-scroll shadow-md rounded-md;
+}
+
+.connection-info__content table {
+  @apply bg-white;
+}
+
+.connection-info__content table tr {
+  @apply bg-white border-b border-gray-200;
+}
+
+.connection-info__content table th {
+  @apply px-6 font-medium text-gray-500 whitespace-nowrap;
+}
+
+.no-data {
+  @apply h-full w-full flex justify-center items-center bg-white;
+}
+
+::-webkit-scrollbar {
+  @apply w-2 h-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-700 rounded-sm;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-500 rounded-md;
+}
+
+.connection-info__content ::-webkit-scrollbar-track {
+  @apply bg-gray-200;
+}
+
+.connection-info__content ::-webkit-scrollbar-thumb {
+  @apply bg-gray-300;
 }
 </style>
