@@ -25,6 +25,7 @@ const selectedNodeInfo = reactive<{ [key: string]: object | null }>({
   selectedNode: null,
   connectedNodes: null
 });
+const markerType = ref<string>("");
 
 watch(getSelectedNodes, ([node]) => {
   selectedNodeInfo.selectedNode = node || null;
@@ -70,6 +71,16 @@ const resetNode = () => {
  */
 const onPanelButton = () => {
   alert("PANEL BUTTON CLICK!");
+};
+
+/**
+ * TTest marker changes
+ */
+let currentMarkerIndex = 0;
+const onChangeMarker = () => {
+  const markerOptions = ["", "arrow", "diamond", "circle", "square"];
+  currentMarkerIndex = (currentMarkerIndex + 1) % markerOptions.length;
+  markerType.value = markerOptions[currentMarkerIndex];
 };
 
 /**
@@ -202,11 +213,12 @@ const nodeClick = () => {
       </DropzoneBackground>
       <Panel class="panel-button-group" position="top-left">
         <button type="button" @click="onPanelButton">Panel</button>
+        <button type="button" @click="onChangeMarker">Marker Change</button>
       </Panel>
       <!-- TODO: warm console log -->
       <MiniMap pannable zoomable maskColor="#aaa" />
       <template #node-custom="customNodeProps">
-        <CustomNode :data="customNodeProps.data" @onToolbarClick="onToolbarClick" @node-click="test" />
+        <CustomNode :data="customNodeProps.data" @onToolbarClick="onToolbarClick" />
       </template>
       <template #edge-custom="customEdgeProps">
         <CustomEdge
@@ -219,6 +231,7 @@ const nodeClick = () => {
           :target-position="customEdgeProps.targetPosition"
           :marker-end="customEdgeProps.markerEnd"
           :style="customEdgeProps.style"
+          :marker-type="markerType"
           @removeEdge="removeEdges"
         />
       </template>
@@ -260,9 +273,5 @@ const nodeClick = () => {
 /* Controls Custom */
 .vue-flow__controls {
   @apply flex;
-}
-
-.test {
-  background-color: #f15a16 !important;
 }
 </style>

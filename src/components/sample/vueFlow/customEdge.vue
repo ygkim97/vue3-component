@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, computed, defineEmits } from "vue";
 import { BaseEdge, EdgeLabelRenderer, getBezierPath, useVueFlow } from "@vue-flow/core";
+import CustomMarker from "@/components/sample/vueFlow/customMarker.vue";
 
 const { getSelectedEdges } = useVueFlow();
 
@@ -40,6 +41,10 @@ const props = defineProps({
   style: {
     type: Object,
     required: false
+  },
+  markerType: {
+    type: String,
+    required: false
   }
 });
 
@@ -50,6 +55,13 @@ defineEmits<{
 const selectedEdgeId = ref<string>("");
 
 const path = computed(() => getBezierPath(props));
+const useCustomMarker = computed(() => {
+  return !!props.markerType;
+});
+const markerId = computed(() => `${props.id}-marker`);
+const edgeColor = computed(() => {
+  return selectedEdgeId.value === props.id ? "#1e3a8a" : "gray";
+});
 
 watch(getSelectedEdges, ([edges]) => {
   selectedEdgeId.value = edges?.id || "";
@@ -57,12 +69,18 @@ watch(getSelectedEdges, ([edges]) => {
 </script>
 
 <template>
-  <BaseEdge :id="id" :style="style" :path="path[0]" :marker-end="markerEnd" />
+  <CustomMarker :id="markerId" :type="markerType" :fill="edgeColor"></CustomMarker>
+  <BaseEdge
+    :id="id"
+    :style="{ stroke: edgeColor }"
+    :path="path[0]"
+    :marker-end="useCustomMarker ? `url(#${markerId})` : ''"
+  />
 
-  <!-- TODO: Edge Markers Custom -->
   <EdgeLabelRenderer>
     <div
       v-if="selectedEdgeId === id"
+      class="selectedEdge"
       :style="{
         pointerEvents: 'all',
         position: 'absolute',
