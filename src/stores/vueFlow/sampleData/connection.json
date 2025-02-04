@@ -4,49 +4,49 @@
       "id": "1",
       "type": "custom",
       "position": { "x": 0, "y": 0 },
-      "data": { "type": "input", "label": "Node 1", "status": null }
+      "data": { "type": "input", "label": "Node 1", "status": null, "description": "Node 1 에 대한 설명입니다." }
     },
     {
       "id": "2",
       "type": "custom",
       "position": { "x": 200, "y": 0 },
-      "data": { "type": "default", "label": "Node 2", "status": null }
+      "data": { "type": "default", "label": "Node 2", "status": null, "description": "Node 2 에 대한 설명입니다." }
     },
     {
       "id": "3",
       "type": "custom",
       "position": { "x": 400, "y": 0 },
-      "data": { "type": "default", "label": "Node 3", "status": null }
+      "data": { "type": "default", "label": "Node 3", "status": null, "description": "Node 3 에 대한 설명입니다." }
     },
     {
       "id": "4",
       "type": "custom",
       "position": { "x": 600, "y": 0 },
-      "data": { "type": "output", "label": "Node 4", "status": null }
+      "data": { "type": "output", "label": "Node 4", "status": null, "description": "Node 4 에 대한 설명입니다." }
     },
     {
       "id": "5",
       "type": "custom",
       "position": { "x": 0, "y": 100 },
-      "data": { "type": "default", "label": "Node 5", "status": null }
+      "data": { "type": "default", "label": "Node 5", "status": null, "description": "Node 5 에 대한 설명입니다." }
     },
     {
       "id": "6",
       "type": "custom",
       "position": { "x": 200, "y": 100 },
-      "data": { "type": "default", "label": "Node 6", "status": null }
+      "data": { "type": "default", "label": "Node 6", "status": null, "description": "Node 6 에 대한 설명입니다." }
     },
     {
       "id": "7",
       "type": "custom",
       "position": { "x": 0, "y": 200 },
-      "data": { "type": "default", "label": "Node 7", "status": null }
+      "data": { "type": "default", "label": "Node 7", "status": null, "description": "Node 7 에 대한 설명입니다." }
     },
     {
       "id": "8",
       "type": "custom",
       "position": { "x": 200, "y": 200 },
-      "data": { "type": "default", "label": "Node 8", "status": null }
+      "data": { "type": "default", "label": "Node 8", "status": null, "description": "Node 8 에 대한 설명입니다." }
     }
   ],
   "edges": [

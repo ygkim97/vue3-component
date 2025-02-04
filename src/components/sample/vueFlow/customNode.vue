@@ -15,6 +15,10 @@ defineEmits<{
   (e: "onToolbarClick", item: { id: string }): void;
 }>();
 
+const nodeLabel = computed(() => {
+  return props.data?.label;
+});
+
 const handleClass = computed(() => {
   // handle color class setting
   const status = props.data?.status;
@@ -38,7 +42,6 @@ const toolbarItemList = [
 ];
 
 const nodeType = ref(props.data?.type);
-const nodeLabel = ref(props.data?.label);
 </script>
 
 <template>
@@ -57,7 +60,7 @@ const nodeLabel = ref(props.data?.label);
   </NodeToolbar>
   <Handle v-if="nodeType !== 'input'" type="target" :position="Position.Left" :class="handleClass.inputHandle" />
   <div v-if="data.status === ProcessStatus.RUNNING" class="spinner" />
-  <span v-else>{{ nodeLabel }}</span>
+  <span v-else class="vue-flow__node-label" :title="nodeLabel">{{ nodeLabel }}</span>
   <Handle v-if="nodeType !== 'output'" type="source" :position="Position.Right" :class="handleClass.outputHandle" />
 </template>
 
@@ -122,5 +125,9 @@ const nodeLabel = ref(props.data?.label);
   100% {
     transform: rotate(360deg);
   }
+}
+
+.vue-flow__node-label {
+  @apply truncate w-full text-center block px-4;
 }
 </style>

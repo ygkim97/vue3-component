@@ -11,6 +11,7 @@ import CustomEdge from "@/components/sample/vueFlow/customEdge.vue";
 import Sidebar from "@/components/sample/vueFlow/sidebar.vue";
 import DropzoneBackground from "@/components/sample/vueFlow/dropzoneBackground.vue";
 import BottomBanner from "@/components/sample/vueFlow/bottomBanner.vue";
+import LabelEditModal from "@/components/sample/vueFlow/labelEditModal.vue";
 import useDragAndDrop from "@/components/sample/vueFlow/dragAndDrop.ts";
 import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
 import { useRunProcess } from "@/components/sample/vueFlow/useRunProcess.ts";
@@ -28,6 +29,7 @@ const selectedNodeInfo = reactive<{ [key: string]: object | null }>({
   connectedNodes: null
 });
 const markerType = ref<string>("");
+const isEditModalOpen = ref<boolan>(false);
 
 watch(getSelectedNodes, ([node]) => {
   selectedNodeInfo.selectedNode = node || null;
@@ -122,8 +124,7 @@ const onToolbarClick = ({ id }: { id: string }): void => {
     // open the node info bottom banner
     isOpenBanner.value = true;
   } else if (id === "edit") {
-    // TODO: node label edit
-    alert("TOOLBAR CLICK! ACTION = " + id);
+    isEditModalOpen.value = true;
   } else if (id === "start") {
     // enable edge animations and change the handle color
     run(selectedNodeInfo);
@@ -246,6 +247,12 @@ const nodeClick = () => {
     </VueFlow>
     <BottomBanner :isOpenBanner="isOpenBanner" :selectedNodeInfo="selectedNodeInfo" @close="closeBanner"></BottomBanner>
   </div>
+  <!-- TODO: common modal component -->
+  <LabelEditModal
+    v-if="isEditModalOpen"
+    :data="selectedNodeInfo.selectedNode"
+    @close="isEditModalOpen = false"
+  ></LabelEditModal>
 </template>
 
 <style>
