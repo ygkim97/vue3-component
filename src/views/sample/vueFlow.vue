@@ -125,6 +125,9 @@ const onToolbarClick = ({ id }: { id: string }): void => {
     isOpenBanner.value = true;
   } else if (id === "edit") {
     isEditModalOpen.value = true;
+    if (isOpenBanner.value) {
+      isOpenBanner.value = false;
+    }
   } else if (id === "start") {
     // enable edge animations and change the handle color
     run(selectedNodeInfo);
