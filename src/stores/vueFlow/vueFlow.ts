@@ -1,4 +1,4 @@
-import { reactive } from "vue";
+import { reactive, computed } from "vue";
 import { defineStore } from "pinia";
 import defaultSampleData from "@/stores/vueFlow/sampleData/default.json";
 import connectionSampleData from "@/stores/vueFlow/sampleData/connection.json";
@@ -7,6 +7,13 @@ import type { CustomNode, CustomEdge } from "@/types/vueFlow.ts";
 export const useVueFlowStore = defineStore("vueFlow", () => {
   const nodes = reactive<CustomNode[]>([]);
   const edges = reactive<CustomEdge[]>([]);
+
+  const nodeObjByKey = computed(() => {
+    return nodes.reduce((acc, cur) => {
+      acc[cur.id] = cur;
+      return acc;
+    }, {});
+  });
 
   const resetAll = () => {
     nodes.length = 0;
@@ -49,5 +56,16 @@ export const useVueFlowStore = defineStore("vueFlow", () => {
     edges.splice(0, edges.length, ...edges.filter(({ id }) => !idsToRemove.includes(id)));
   };
 
-  return { nodes, edges, getJsonData, resetAll, addNode, updateNode, removeNode, addEdge, removeEdges };
+  return {
+    nodes,
+    edges,
+    getJsonData,
+    resetAll,
+    addNode,
+    updateNode,
+    removeNode,
+    addEdge,
+    removeEdges,
+    nodeObjByKey
+  };
 });
