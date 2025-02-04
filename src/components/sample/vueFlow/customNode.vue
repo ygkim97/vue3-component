@@ -54,7 +54,7 @@ const nodeType = ref(props.data?.type);
       :class="{ selected: item.id === data.item?.id }"
       @click="$emit('onToolbarClick', item)"
     >
-      <svg-icon v-if="item.isIcon" :name="item.iconName" class="toolbar-icon"></svg-icon>
+      <svg-icon v-if="item.isIcon" :name="item.iconName"></svg-icon>
       <span v-else class="font-bold text-xl">{{ item.text }}</span>
     </button>
   </NodeToolbar>
@@ -66,15 +66,11 @@ const nodeType = ref(props.data?.type);
 
 <style>
 .vue-flow__node-toolbar {
-  @apply flex flex-wrap gap-4 bg-gray-200 p-2 rounded-lg shadow-lg;
+  @apply flex flex-wrap gap-2 bg-gray-200 px-2 py-1 border rounded-lg shadow-lg;
 }
 
 .vue-flow__node-toolbar button {
-  @apply border-2 border-blue-900 rounded-full text-blue-900 flex justify-center items-center w-8 h-8 cursor-pointer p-1.5;
-}
-
-.vue-flow__node-toolbar button > .toolbar-icon {
-  @apply w-4 h-4;
+  @apply border-2 border-blue-900 rounded-full text-blue-900 flex justify-center items-center w-7 h-7 cursor-pointer p-1.5;
 }
 
 .vue-flow__node-toolbar button.selected {
