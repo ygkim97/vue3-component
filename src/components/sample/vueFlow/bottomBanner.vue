@@ -120,7 +120,7 @@ const getConnectionData = (connectType, nodeIndex) => {
         </div>
         <div class="connection-info-box">
           <div class="flex justify-between">
-            <h5 class="connection-info__title">Selected Node Connection Data</h5>
+            <h5 class="connection-info__title">Incoming Connections</h5>
 
             <!-- TODO: selectebox component -->
             <div class="grid grid-cols-2 gap-2 items-center">

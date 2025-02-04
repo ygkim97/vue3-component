@@ -13,12 +13,14 @@ import DropzoneBackground from "@/components/sample/vueFlow/dropzoneBackground.v
 import BottomBanner from "@/components/sample/vueFlow/bottomBanner.vue";
 import useDragAndDrop from "@/components/sample/vueFlow/dragAndDrop.ts";
 import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
+import { useRunProcess } from "@/components/sample/vueFlow/useRunProcess.ts";
 
 const { getSelectedNodes, getConnectedEdges, getIntersectingNodes, updateNode: setNode, getIncomers } = useVueFlow();
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 const vueFlowStore = useVueFlowStore();
 const { resetAll, getJsonData: fetchJsonData, addNode, updateNode, removeNode, addEdge, removeEdges } = vueFlowStore;
 const { nodes, edges } = storeToRefs(vueFlowStore);
+const { run } = useRunProcess();
 
 const isOpenBanner = ref<boolean>(false);
 const selectedNodeInfo = reactive<{ [key: string]: object | null }>({
@@ -110,18 +112,21 @@ const onConnect = (params: Connection) => {
  * - Edit edges and handles UI
  */
 const onToolbarClick = ({ id }: { id: string }): void => {
-  // TODO: id 값에 따라 action 처리
-  // delete: node delete, info: open the node info modal, edit: node label edit, start: enable edge animations and change the handle color.
-
   if (id === "delete") {
+    // node delete
     if (confirm("노드를 삭제하시겠습니까?")) {
-      const selectedNodeId = selectedNode.value.id;
+      const selectedNodeId = selectedNodeInfo.selectedNode.id;
       removeNode(selectedNodeId, getConnectedEdges(selectedNodeId));
     }
   } else if (id === "info") {
+    // open the node info bottom banner
     isOpenBanner.value = true;
-  } else {
+  } else if (id === "edit") {
+    // TODO: node label edit
     alert("TOOLBAR CLICK! ACTION = " + id);
+  } else if (id === "start") {
+    // enable edge animations and change the handle color
+    run(selectedNodeInfo);
   }
 };
 
@@ -250,21 +255,6 @@ const nodeClick = () => {
 .vue-flow-wrapper {
   @apply h-full flex relative;
 }
-
-/* Node Custom */
-.vue-flow__node {
-  @apply w-36 h-10 rounded-full border-2 border-blue-900 flex items-center justify-center text-sm font-medium text-blue-900 bg-white !important;
-}
-
-.vue-flow__node.selected {
-  @apply bg-blue-900 text-white !important;
-}
-
-/* Handle Custom */
-.vue-flow__handle {
-  @apply w-2 h-2 border-blue-900 border-2 bg-white !important;
-}
-
 /* Panel Custom */
 .panel-button-group button {
   @apply text-white bg-blue-900 hover:bg-blue-900/90 focus:ring-4 focus:outline-none focus:ring-blue-900/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-blue-900/55 me-2 mb-2;

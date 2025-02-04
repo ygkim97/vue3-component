@@ -4,49 +4,49 @@
       "id": "1",
       "type": "custom",
       "position": { "x": 0, "y": 0 },
-      "data": { "type": "input", "label": "Node 1" }
+      "data": { "type": "input", "label": "Node 1", "status": null }
     },
     {
       "id": "2",
       "type": "custom",
       "position": { "x": 200, "y": 0 },
-      "data": { "type": "default", "label": "Node 2" }
+      "data": { "type": "default", "label": "Node 2", "status": null }
     },
     {
       "id": "3",
       "type": "custom",
       "position": { "x": 400, "y": 0 },
-      "data": { "type": "default", "label": "Node 3" }
+      "data": { "type": "default", "label": "Node 3", "status": null }
     },
     {
       "id": "4",
       "type": "custom",
       "position": { "x": 600, "y": 0 },
-      "data": { "type": "output", "label": "Node 4" }
+      "data": { "type": "output", "label": "Node 4", "status": null }
     },
     {
       "id": "5",
       "type": "custom",
       "position": { "x": 0, "y": 100 },
-      "data": { "type": "default", "label": "Node 5" }
+      "data": { "type": "default", "label": "Node 5", "status": null }
     },
     {
       "id": "6",
       "type": "custom",
       "position": { "x": 200, "y": 100 },
-      "data": { "type": "default", "label": "Node 6" }
+      "data": { "type": "default", "label": "Node 6", "status": null }
     },
     {
       "id": "7",
       "type": "custom",
       "position": { "x": 0, "y": 200 },
-      "data": { "type": "default", "label": "Node 7" }
+      "data": { "type": "default", "label": "Node 7", "status": null }
     },
     {
       "id": "8",
       "type": "custom",
       "position": { "x": 200, "y": 200 },
-      "data": { "type": "default", "label": "Node 8" }
+      "data": { "type": "default", "label": "Node 8", "status": null }
     }
   ],
   "edges": [
@@ -60,8 +60,7 @@
       "id": "e2->3",
       "type": "custom",
       "source": "2",
-      "target": "3",
-      "animated": false
+      "target": "3"
     },
     {
       "id": "e3->4",
