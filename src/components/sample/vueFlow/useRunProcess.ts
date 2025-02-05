@@ -121,5 +121,5 @@ export function useRunProcess() {
     if (status === ProcessStatus.ERROR) alert(nodeId + " 노드 실행 에러!");
   };
 
-  return { run };
+  return { run, reset };
 }

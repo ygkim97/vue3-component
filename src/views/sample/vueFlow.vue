@@ -21,7 +21,7 @@ const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 const vueFlowStore = useVueFlowStore();
 const { resetAll, getJsonData: fetchJsonData, addNode, updateNode, removeNode, addEdge, removeEdges } = vueFlowStore;
 const { nodes, edges } = storeToRefs(vueFlowStore);
-const { run } = useRunProcess();
+const { run, reset } = useRunProcess();
 
 const isOpenBanner = ref<boolean>(false);
 const selectedNodeInfo = reactive<{ [key: string]: object | null }>({
@@ -74,10 +74,10 @@ const resetNode = () => {
 };
 
 /**
- * Test the added panel button
+ * Resets the execution state when the panel button is clicked.
  */
-const onPanelButton = () => {
-  alert("PANEL BUTTON CLICK!");
+const resetExecution = () => {
+  reset();
 };
 
 /**
@@ -103,7 +103,7 @@ const onConnect = (params: Connection) => {
  * Toolbar Click Test
  * - Node delete
  * - Open modal
- * - Edit node label
+ * - Edit node label and description
  * - Edit edges and handles UI
  */
 const onToolbarClick = ({ id }: { id: string }): void => {
@@ -117,6 +117,7 @@ const onToolbarClick = ({ id }: { id: string }): void => {
     // open the node info bottom banner
     isOpenBanner.value = true;
   } else if (id === "edit") {
+    // opens the modal to edit the node label and description.
     isEditModalOpen.value = true;
     if (isOpenBanner.value) {
       isOpenBanner.value = false;
@@ -223,7 +224,6 @@ const markSelectBoxClick = () => {
       <Panel position="top-left" class="panel-box">
         <h3>Panel Box</h3>
         <div class="panel-contents">
-          <button type="button" @click="onPanelButton">Panel</button>
           <div
             class="relative w-40 bg-white rounded-md text-xs"
             @focusout="isOpenMarkerSelectBox != isOpenMarkerSelectBox"
@@ -256,6 +256,7 @@ const markSelectBoxClick = () => {
               </ul>
             </div>
           </div>
+          <button type="button" @click="resetExecution">Reset Execution</button>
         </div>
       </Panel>
       <!-- TODO: warm console log -->
