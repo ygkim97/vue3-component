@@ -28,8 +28,11 @@ const selectedNodeInfo = reactive<{ [key: string]: object | null }>({
   selectedNode: null,
   connectedNodes: null
 });
-const markerType = ref<string>("");
 const isEditModalOpen = ref<boolan>(false);
+const markerSelection = ref(null);
+const isOpenMarkerSelectBox = ref<boolean>(false);
+const markerType = ref<string>("plain");
+const markerOptions = ["plain", "arrow", "diamond", "circle", "square"];
 
 watch(getSelectedNodes, ([node]) => {
   selectedNodeInfo.selectedNode = node || null;
@@ -75,16 +78,6 @@ const resetNode = () => {
  */
 const onPanelButton = () => {
   alert("PANEL BUTTON CLICK!");
-};
-
-/**
- * TTest marker changes
- */
-let currentMarkerIndex = 0;
-const onChangeMarker = () => {
-  const markerOptions = ["", "arrow", "diamond", "circle", "square"];
-  currentMarkerIndex = (currentMarkerIndex + 1) % markerOptions.length;
-  markerType.value = markerOptions[currentMarkerIndex];
 };
 
 /**
@@ -190,6 +183,13 @@ const setConnectionNodes = () => {
 const nodeClick = () => {
   isOpenBanner.value = false;
 };
+
+const markSelectBoxClick = () => {
+  isOpenMarkerSelectBox.value = !isOpenMarkerSelectBox.value;
+  if (isOpenMarkerSelectBox.value) {
+    markerSelection.value.focus();
+  }
+};
 </script>
 
 <template>
@@ -220,9 +220,43 @@ const nodeClick = () => {
       >
         <p v-if="isDragOver">Drop here</p>
       </DropzoneBackground>
-      <Panel class="panel-button-group" position="top-left">
-        <button type="button" @click="onPanelButton">Panel</button>
-        <button type="button" @click="onChangeMarker">Marker Change</button>
+      <Panel position="top-left" class="panel-box">
+        <h3>Panel Box</h3>
+        <div class="panel-contents">
+          <button type="button" @click="onPanelButton">Panel</button>
+          <div
+            class="relative w-40 bg-white rounded-md text-xs"
+            @focusout="isOpenMarkerSelectBox != isOpenMarkerSelectBox"
+          >
+            <button
+              class="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 flex justify-between items-center overflow-hidden h-full"
+              @click="markSelectBoxClick"
+            >
+              <span class="text-gray-500">{{ markerType.toString().toUpperCase() }} MARKER</span>
+              <svg-icon :name="isOpenMarkerSelectBox ? 'arrow-up' : 'arrow-down'" class="w-3"></svg-icon>
+            </button>
+            <div
+              class="absolute z-20 w-full"
+              ref="markerSelection"
+              tabindex="-1"
+              @focusout="isOpenMarkerSelectBox = false"
+            >
+              <ul
+                v-show="isOpenMarkerSelectBox"
+                class="w-full mt-2 border border-gray-300 rounded-md shadow-lg overflow-hidden z-10 bg-white"
+              >
+                <li v-for="marker in markerOptions" :key="marker" :class="markerType === marker ? 'bg-gray-100' : ''">
+                  <button
+                    class="w-full h-full px-4 py-2 text-gray-500 hover:bg-gray-50 cursor-pointer overflow-hidden text-left"
+                    @mousedown="[(markerType = marker), (isOpenMarkerSelectBox = !isOpenMarkerSelectBox)]"
+                  >
+                    {{ marker.toUpperCase() }} MARKER
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </Panel>
       <!-- TODO: warm console log -->
       <MiniMap pannable zoomable maskColor="#aaa" />
@@ -266,8 +300,16 @@ const nodeClick = () => {
   @apply h-full flex relative;
 }
 /* Panel Custom */
-.panel-button-group button {
-  @apply text-white bg-blue-900 hover:bg-blue-900/90 focus:ring-4 focus:outline-none focus:ring-blue-900/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-blue-900/55 me-2 mb-2;
+.panel-box {
+  @apply grid text-center p-2 font-bold bg-blue-900 border border-gray-200 rounded-md bg-opacity-20;
+}
+
+.panel-contents {
+  @apply grid grid-cols-[auto_3fr] gap-2 m-1;
+}
+
+.panel-contents > button {
+  @apply text-white bg-blue-900 hover:bg-blue-900/90 focus:ring-4 focus:outline-none focus:ring-blue-900/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-blue-900/55;
 }
 
 /* Controls Custom */
