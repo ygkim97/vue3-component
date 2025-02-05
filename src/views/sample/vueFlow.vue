@@ -19,7 +19,16 @@ import { useRunProcess } from "@/components/sample/vueFlow/useRunProcess.ts";
 const { getSelectedNodes, getConnectedEdges, getIntersectingNodes, updateNode: setNode, getIncomers } = useVueFlow();
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 const vueFlowStore = useVueFlowStore();
-const { resetAll, getJsonData: fetchJsonData, addNode, updateNode, removeNode, addEdge, removeEdges } = vueFlowStore;
+const {
+  resetAll,
+  getJsonData: fetchJsonData,
+  addNode,
+  updateNode,
+  removeNode,
+  addEdge,
+  removeEdges,
+  setRestoredData
+} = vueFlowStore;
 const { nodes, edges } = storeToRefs(vueFlowStore);
 const { run, reset } = useRunProcess();
 
@@ -78,13 +87,6 @@ const resetNode = () => {
  */
 const resetExecution = () => {
   reset();
-};
-
-/**
- * Test the added control button
- */
-const onControlButton = () => {
-  alert("CONTROL BUTTON CLICK!");
 };
 
 /**
@@ -191,6 +193,30 @@ const markSelectBoxClick = () => {
     markerSelection.value.focus();
   }
 };
+
+/**
+ * Manage VueFlow Info Save & Restore Using LocalStorage
+ */
+const flowKey = "vue-flow--save-restore";
+const onSave = () => {
+  localStorage.setItem(flowKey, JSON.stringify({ nodes: nodes.value, edges: edges.value }));
+  alert("저장되었습니다.");
+};
+
+const restoreSavedFlow = () => {
+  if (confirm("저장된 데이터를 불러오시겠습니까?")) {
+    const savedFlow = JSON.parse(localStorage.getItem(flowKey));
+    if (savedFlow) {
+      setRestoredData(savedFlow);
+    } else {
+      alert("저장된 데이터가 없습니다.");
+    }
+  }
+};
+
+const doScreenshot = () => {
+  // TODO: vueFlow screenshot
+};
 </script>
 
 <template>
@@ -280,7 +306,15 @@ const markSelectBoxClick = () => {
         />
       </template>
       <Controls position="top-right">
-        <ControlButton title="test button" @click="onControlButton">T</ControlButton>
+        <ControlButton title="save" @click="onSave">
+          <svg-icon name="floppy-disk"></svg-icon>
+        </ControlButton>
+        <ControlButton title="restore" @click="restoreSavedFlow">
+          <svg-icon name="file-arrow-down"></svg-icon>
+        </ControlButton>
+        <ControlButton title="screenshot" @click="doScreenshot">
+          <svg-icon name="camera"></svg-icon>
+        </ControlButton>
       </Controls>
     </VueFlow>
     <BottomBanner :isOpenBanner="isOpenBanner" :selectedNodeInfo="selectedNodeInfo" @close="closeBanner"></BottomBanner>

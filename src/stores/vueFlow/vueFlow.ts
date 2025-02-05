@@ -56,6 +56,11 @@ export const useVueFlowStore = defineStore("vueFlow", () => {
     edges.splice(0, edges.length, ...edges.filter(({ id }) => !idsToRemove.includes(id)));
   };
 
+  const setRestoredData = ({ nodes: restoreNodes, edges: restoreEdges }) => {
+    nodes.splice(0, nodes.length, ...restoreNodes);
+    edges.splice(0, edges.length, ...restoreEdges);
+  };
+
   return {
     nodes,
     edges,
@@ -66,6 +71,7 @@ export const useVueFlowStore = defineStore("vueFlow", () => {
     removeNode,
     addEdge,
     removeEdges,
+    setRestoredData,
     nodeObjByKey
   };
 });
