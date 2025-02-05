@@ -15,8 +15,16 @@ import LabelEditModal from "@/components/sample/vueFlow/labelEditModal.vue";
 import useDragAndDrop from "@/components/sample/vueFlow/dragAndDrop.ts";
 import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
 import { useRunProcess } from "@/components/sample/vueFlow/useRunProcess.ts";
+import { useScreenshot } from "@/components/sample/vueFlow/useScreenshot.ts";
 
-const { getSelectedNodes, getConnectedEdges, getIntersectingNodes, updateNode: setNode, getIncomers } = useVueFlow();
+const {
+  getSelectedNodes,
+  getConnectedEdges,
+  getIntersectingNodes,
+  updateNode: setNode,
+  getIncomers,
+  vueFlowRef
+} = useVueFlow();
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 const vueFlowStore = useVueFlowStore();
 const {
@@ -31,13 +39,14 @@ const {
 } = vueFlowStore;
 const { nodes, edges } = storeToRefs(vueFlowStore);
 const { run, reset } = useRunProcess();
+const { capture } = useScreenshot();
 
 const isOpenBanner = ref<boolean>(false);
 const selectedNodeInfo = reactive<{ [key: string]: object | null }>({
   selectedNode: null,
   connectedNodes: null
 });
-const isEditModalOpen = ref<boolan>(false);
+const isEditModalOpen = ref<boolean>(false);
 const markerSelection = ref(null);
 const isOpenMarkerSelectBox = ref<boolean>(false);
 const markerType = ref<string>("plain");
@@ -215,7 +224,12 @@ const restoreSavedFlow = () => {
 };
 
 const doScreenshot = () => {
-  // TODO: vueFlow screenshot
+  if (!vueFlowRef.value) {
+    console.warn("VueFlow element not found");
+    return;
+  }
+
+  capture(vueFlowRef.value, { shouldDownload: true });
 };
 </script>
 
@@ -333,6 +347,10 @@ const doScreenshot = () => {
 @import "@vue-flow/controls/dist/style.css";
 .vue-flow-wrapper {
   @apply h-full flex relative;
+}
+
+.vue-flow {
+  @apply bg-white;
 }
 /* Panel Custom */
 .panel-box {

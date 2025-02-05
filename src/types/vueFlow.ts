@@ -1,3 +1,6 @@
+import type { Ref } from "vue";
+import type { Options as HTMLToImageOptions } from "html-to-image/es/types";
+
 export interface CustomNode {
   id: string; // 노드의 고유 ID
   type: string; // 노드의 타입
@@ -12,4 +15,25 @@ export interface CustomEdge {
   target: string; // 연결의 끝 노드 ID
   animated?: boolean; // 애니메이션 적용 여부
   data?: object; // 추가 데이터
+}
+
+export type ImageType = "jpeg" | "png";
+
+export interface UseScreenshotOptions extends HTMLToImageOptions {
+  type?: ImageType;
+  fileName?: string;
+  shouldDownload?: boolean;
+  fetchRequestInit?: RequestInit;
+}
+
+export type CaptureScreenshot = (el: HTMLElement, options?: UseScreenshotOptions) => Promise<object>;
+
+export type Download = (fileName: string) => void;
+
+export interface UseScreenshot {
+  // returns the data url of the screenshot
+  capture: CaptureScreenshot;
+  download?: Download;
+  dataUrl?: Ref<string>;
+  error?: Ref;
 }
