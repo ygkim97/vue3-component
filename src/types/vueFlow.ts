@@ -24,6 +24,7 @@ export interface UseScreenshotOptions extends HTMLToImageOptions {
   fileName?: string;
   shouldDownload?: boolean;
   fetchRequestInit?: RequestInit;
+  isNodeDataOnly?: boolean;
 }
 
 export type CaptureScreenshot = (el: HTMLElement, options?: UseScreenshotOptions) => Promise<object>;

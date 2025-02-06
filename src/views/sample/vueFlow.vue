@@ -51,6 +51,7 @@ const markerSelection = ref(null);
 const isOpenMarkerSelectBox = ref<boolean>(false);
 const markerType = ref<string>("plain");
 const markerOptions = ["plain", "arrow", "diamond", "circle", "square"];
+const isNodeDataOnly = ref<boolean>(false);
 
 watch(getSelectedNodes, ([node]) => {
   selectedNodeInfo.selectedNode = node || null;
@@ -229,7 +230,7 @@ const doScreenshot = () => {
     return;
   }
 
-  capture(vueFlowRef.value, { shouldDownload: true });
+  capture(vueFlowRef.value, { shouldDownload: true, isNodeDataOnly: isNodeDataOnly.value });
 };
 </script>
 
@@ -297,6 +298,17 @@ const doScreenshot = () => {
             </div>
           </div>
           <button type="button" @click="resetExecution">Reset Execution</button>
+          <div class="flex items-center col-span-2">
+            <input
+              id="screenshot-only-data"
+              type="checkbox"
+              v-model="isNodeDataOnly"
+              class="w-4 h-4 text-blue-900 bg-gray-100 border-gray-300 rounded-sm dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label for="screenshot-only-data" class="ms-2 text-sm font-medium text-gray-700"
+              >SCREENSHOT ONLY DATA</label
+            >
+          </div>
         </div>
       </Panel>
       <!-- TODO: warm console log -->
@@ -358,7 +370,7 @@ const doScreenshot = () => {
 }
 
 .panel-contents {
-  @apply grid grid-cols-[auto_3fr] gap-2 m-1;
+  @apply grid grid-cols-2 gap-2 m-1;
 }
 
 .panel-contents > button {
