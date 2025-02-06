@@ -23,7 +23,8 @@ const {
   getIntersectingNodes,
   updateNode: setNode,
   getIncomers,
-  vueFlowRef
+  vueFlowRef,
+  addSelectedNodes
 } = useVueFlow();
 const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 const vueFlowStore = useVueFlowStore();
@@ -69,6 +70,7 @@ watch(getSelectedNodes, ([node]) => {
 const getJsonData = (action: string) => {
   if (confirm("기존 노드가 초기화됩니다. 계속 진행하시겠습니까?")) {
     fetchJsonData(action);
+    addSelectedNodes([]);
   }
 };
 
