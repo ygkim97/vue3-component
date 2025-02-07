@@ -313,7 +313,6 @@ const doScreenshot = () => {
           </div>
         </div>
       </Panel>
-      <!-- TODO: warm console log -->
       <MiniMap pannable zoomable maskColor="#aaa" />
       <template #node-custom="customNodeProps">
         <CustomNode :data="customNodeProps.data" @onToolbarClick="onToolbarClick" />
