@@ -2,6 +2,7 @@
 import { ref, watch, computed, defineEmits } from "vue";
 import { BaseEdge, EdgeLabelRenderer, getBezierPath, useVueFlow } from "@vue-flow/core";
 import CustomMarker from "@/components/sample/vueFlow/customMarker.vue";
+import type { Position } from "@vue-flow/core";
 
 const { getSelectedEdges } = useVueFlow();
 
@@ -27,11 +28,11 @@ const props = defineProps({
     required: true
   },
   sourcePosition: {
-    type: String,
+    type: String as () => Position,
     required: true
   },
   targetPosition: {
-    type: String,
+    type: String as () => Position,
     required: true
   },
   markerEnd: {
@@ -44,7 +45,8 @@ const props = defineProps({
   },
   markerType: {
     type: String,
-    required: false
+    required: false,
+    default: ""
   }
 });
 

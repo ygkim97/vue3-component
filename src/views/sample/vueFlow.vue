@@ -6,13 +6,14 @@ import type { Connection } from "@vue-flow/core";
 import { ControlButton, Controls } from "@vue-flow/controls";
 import { MiniMap } from "@vue-flow/minimap";
 
+import type { CustomNode as CustomNodeType } from "@/types/vueFlow.ts";
 import CustomNode from "@/components/sample/vueFlow/customNode.vue";
 import CustomEdge from "@/components/sample/vueFlow/customEdge.vue";
 import Sidebar from "@/components/sample/vueFlow/sidebar.vue";
 import DropzoneBackground from "@/components/sample/vueFlow/dropzoneBackground.vue";
 import BottomBanner from "@/components/sample/vueFlow/bottomBanner.vue";
 import LabelEditModal from "@/components/sample/vueFlow/labelEditModal.vue";
-import useDragAndDrop from "@/components/sample/vueFlow/dragAndDrop.ts";
+import useDragAndDrop from "@/components/sample/vueFlow/useDragAndDrop.ts";
 import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
 import { useRunProcess } from "@/components/sample/vueFlow/useRunProcess.ts";
 import { useScreenshot } from "@/components/sample/vueFlow/useScreenshot.ts";
@@ -43,12 +44,12 @@ const { run, reset } = useRunProcess();
 const { capture } = useScreenshot();
 
 const isOpenBanner = ref<boolean>(false);
-const selectedNodeInfo = reactive<{ [key: string]: object | null }>({
+const selectedNodeInfo = reactive<{ selectedNode: CustomNodeType | null; connectedNodes: CustomNodeType[][] | null }>({
   selectedNode: null,
   connectedNodes: null
 });
 const isEditModalOpen = ref<boolean>(false);
-const markerSelection = ref(null);
+const markerSelection = ref<HTMLElement | null>(null);
 const isOpenMarkerSelectBox = ref<boolean>(false);
 const markerType = ref<string>("plain");
 const markerOptions = ["plain", "arrow", "diamond", "circle", "square"];
@@ -121,24 +122,28 @@ const onConnect = (params: Connection) => {
  * - Edit edges and handles UI
  */
 const onToolbarClick = ({ id }: { id: string }): void => {
-  if (id === "delete") {
-    // node delete
-    if (confirm("노드를 삭제하시겠습니까?")) {
-      const selectedNodeId = selectedNodeInfo.selectedNode.id;
-      removeNode(selectedNodeId, getConnectedEdges(selectedNodeId));
+  if (selectedNodeInfo.selectedNode === null) {
+    console.error("No node is selected.");
+  } else {
+    if (id === "delete") {
+      // node delete
+      if (confirm("노드를 삭제하시겠습니까?")) {
+        const selectedNodeId = selectedNodeInfo.selectedNode!.id;
+        removeNode(selectedNodeId, getConnectedEdges(selectedNodeId));
+      }
+    } else if (id === "info") {
+      // open the node info bottom banner
+      isOpenBanner.value = true;
+    } else if (id === "edit") {
+      // opens the modal to edit the node label and description.
+      isEditModalOpen.value = true;
+      if (isOpenBanner.value) {
+        isOpenBanner.value = false;
+      }
+    } else if (id === "start" && selectedNodeInfo.selectedNode) {
+      // enable edge animations and change the handle color
+      run(selectedNodeInfo as { selectedNode: CustomNodeType; connectedNodes: CustomNodeType[][] | null });
     }
-  } else if (id === "info") {
-    // open the node info bottom banner
-    isOpenBanner.value = true;
-  } else if (id === "edit") {
-    // opens the modal to edit the node label and description.
-    isEditModalOpen.value = true;
-    if (isOpenBanner.value) {
-      isOpenBanner.value = false;
-    }
-  } else if (id === "start") {
-    // enable edge animations and change the handle color
-    run(selectedNodeInfo);
   }
 };
 
@@ -152,21 +157,36 @@ const closeBanner = () => {
 /**
  * Node Update
  */
-const nodeDragStop = ({ node }) => {
+const nodeDragStop = ({ node }: { node: CustomNodeType }) => {
   const { id, type, data, position } = node;
   const originPosition = nodes.value.find((data) => data.id === id)?.position;
 
   const intersections = getIntersectingNodes(node);
   const intersectionIds = intersections.map((intersection) => intersection.id);
 
-  const updatedNode = { id, type, position: intersectionIds.length > 0 ? originPosition : position, data };
+  const updatedNode = {
+    id,
+    type,
+    position: intersectionIds.length > 0 ? originPosition : position,
+    data
+  } as CustomNodeType;
   updateNode(updatedNode); // store node update
   setNode(id, updatedNode); // NOTE: Vue Flow 에서 상태 변화를 감지하도록 노드 강제 업데이트
 };
 
 const setConnectionNodes = () => {
   // selected Node 에 연결된 nodes path list 가져오는 함수
-  const buildConnections = ({ currentPath = [], node, connectData, cnt }) => {
+  const buildConnections = ({
+    currentPath = [],
+    node,
+    connectData,
+    cnt
+  }: {
+    currentPath?: CustomNodeType[];
+    node: CustomNodeType;
+    connectData: CustomNodeType[][];
+    cnt: number;
+  }) => {
     if (cnt === 0 && !connectData[0]) {
       currentPath = [node];
       connectData[cnt] = [node];
@@ -186,8 +206,8 @@ const setConnectionNodes = () => {
     return cnt;
   };
 
-  const connectData = [];
-  if (getIncomers(selectedNodeInfo.selectedNode).length > 0) {
+  const connectData: CustomNodeType[][] = [];
+  if (selectedNodeInfo.selectedNode && getIncomers(selectedNodeInfo.selectedNode).length > 0) {
     let cnt = 0;
     cnt = buildConnections({ node: selectedNodeInfo.selectedNode, connectData, cnt });
   }
@@ -201,7 +221,7 @@ const nodeClick = () => {
 
 const markSelectBoxClick = () => {
   isOpenMarkerSelectBox.value = !isOpenMarkerSelectBox.value;
-  if (isOpenMarkerSelectBox.value) {
+  if (isOpenMarkerSelectBox.value && markerSelection.value) {
     markerSelection.value.focus();
   }
 };
@@ -217,9 +237,10 @@ const onSave = () => {
 
 const restoreSavedFlow = () => {
   if (confirm("저장된 데이터를 불러오시겠습니까?")) {
-    const savedFlow = JSON.parse(localStorage.getItem(flowKey));
-    if (savedFlow) {
-      setRestoredData(savedFlow);
+    const savedFlow = localStorage.getItem(flowKey);
+    const parsedFlow = savedFlow ? JSON.parse(savedFlow) : null;
+    if (parsedFlow) {
+      setRestoredData(parsedFlow);
     } else {
       alert("저장된 데이터가 없습니다.");
     }
@@ -239,7 +260,6 @@ const doScreenshot = () => {
 <template>
   <div class="vue-flow-wrapper" @drop="onDrop">
     <Sidebar @getJsonData="getJsonData" @createNode="createNode" @resetNode="resetNode" />
-    <!-- TODO: 해당 좌표에 이미 노드가 존재할 경우 처리 -->
     <VueFlow
       class="vue-flow"
       fit-view-on-init

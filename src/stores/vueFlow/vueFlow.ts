@@ -8,11 +8,8 @@ export const useVueFlowStore = defineStore("vueFlow", () => {
   const nodes = reactive<CustomNode[]>([]);
   const edges = reactive<CustomEdge[]>([]);
 
-  const nodeObjByKey = computed(() => {
-    return nodes.reduce((acc, cur) => {
-      acc[cur.id] = cur;
-      return acc;
-    }, {});
+  const nodeListByKey = computed(() => {
+    return new Map(nodes.map((node) => [node.id, node]));
   });
 
   const resetAll = () => {
@@ -39,7 +36,7 @@ export const useVueFlowStore = defineStore("vueFlow", () => {
     }
   };
 
-  const removeNode = (nodeId, connectedEdges) => {
+  const removeNode = (nodeId: string, connectedEdges: CustomEdge[]) => {
     nodes.splice(0, nodes.length, ...nodes.filter(({ id }) => id !== nodeId));
 
     // NOTE: 노드와 연결되어 있는 엣지 제거
@@ -56,7 +53,13 @@ export const useVueFlowStore = defineStore("vueFlow", () => {
     edges.splice(0, edges.length, ...edges.filter(({ id }) => !idsToRemove.includes(id)));
   };
 
-  const setRestoredData = ({ nodes: restoreNodes, edges: restoreEdges }) => {
+  const setRestoredData = ({
+    nodes: restoreNodes,
+    edges: restoreEdges
+  }: {
+    nodes: CustomNode[];
+    edges: CustomEdge[];
+  }) => {
     nodes.splice(0, nodes.length, ...restoreNodes);
     edges.splice(0, edges.length, ...restoreEdges);
   };
@@ -64,6 +67,7 @@ export const useVueFlowStore = defineStore("vueFlow", () => {
   return {
     nodes,
     edges,
+    nodeListByKey,
     getJsonData,
     resetAll,
     addNode,
@@ -71,7 +75,6 @@ export const useVueFlowStore = defineStore("vueFlow", () => {
     removeNode,
     addEdge,
     removeEdges,
-    setRestoredData,
-    nodeObjByKey
+    setRestoredData
   };
 });

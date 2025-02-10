@@ -1,28 +1,35 @@
 import { watch, reactive } from "vue";
 import { useVueFlow } from "@vue-flow/core";
 import { ProcessStatus } from "@/constants/vueFlow.ts";
+import type { CustomNode, CustomEdge } from "@/types/vueFlow.ts";
 
 export function useRunProcess() {
   const { updateNodeData, getConnectedEdges } = useVueFlow();
 
-  const nodeStatusById = reactive({});
-  const connectEdgeObjById = reactive({});
-  let uniqueValues = [];
-  let executedNodeIds = [];
-  let selectedNodeId = null;
+  const nodeStatusById = reactive<{ [key: string]: string }>({});
+  const connectEdgeObjById = reactive<Record<string, CustomEdge[]>>({});
+  let uniqueValues: string[] = [];
+  let executedNodeIds: string[] = [];
+  let selectedNodeId: string | null = null;
 
-  const run = async ({ selectedNode, connectedNodes }) => {
+  const run = async ({
+    selectedNode,
+    connectedNodes
+  }: {
+    selectedNode: CustomNode;
+    connectedNodes: CustomNode[][] | null;
+  }) => {
     // reset edge and node status
     await reset();
 
     // path 별 nodeId group setting
     selectedNodeId = selectedNode.id;
-    let connectedNodeIds = connectedNodes.map((nodeGroup) => {
-      return nodeGroup.map((node) => node.id);
-    });
-
-    // 앞으로 연결된 node 가 없는 경우, 임의로 설정해준다
-    if (connectedNodeIds.length === 0) connectedNodeIds = [[selectedNodeId]];
+    const connectedNodeIds =
+      connectedNodes !== null
+        ? connectedNodes.map((nodeGroup) => {
+            return nodeGroup.map((node) => node.id);
+          })
+        : [[selectedNodeId]]; // 앞으로 연결된 node 가 없는 경우, 임의로 설정해준다
 
     // 실행해야되는 nodeId 값 배열로 셋팅(중복제거)
     uniqueValues = [...new Set(Object.values(connectedNodeIds).flat())];
@@ -79,7 +86,7 @@ export function useRunProcess() {
     { deep: true }
   );
 
-  const reset = () => {
+  const reset = async () => {
     uniqueValues.forEach((nodeId) => {
       updateNodeStatus(nodeId, null);
     });
@@ -100,7 +107,7 @@ export function useRunProcess() {
     return Math.random() < 0.8 ? ProcessStatus.SUCCESS : ProcessStatus.ERROR;
   };
 
-  const setStatus = (nodeId) => {
+  const setStatus = (nodeId: string) => {
     updateNodeStatus(nodeId, ProcessStatus.RUNNING);
 
     setTimeout(
@@ -114,7 +121,7 @@ export function useRunProcess() {
     );
   };
 
-  const updateNodeStatus = (nodeId: string, status: string) => {
+  const updateNodeStatus = (nodeId: string, status: string | null) => {
     updateNodeData(nodeId, { status });
 
     if (selectedNodeId === nodeId && status === ProcessStatus.SUCCESS) alert("모든 실행 완료!");

@@ -9,8 +9,8 @@ const { updateNode } = vueFlowStore;
 
 const props = defineProps({
   data: {
-    type: Object,
-    required: true
+    type: Object || null,
+    required: false
   }
 });
 
@@ -26,7 +26,7 @@ const close = () => {
 };
 
 const change = () => {
-  if (confirm("변경된 내용이 저장됩니다. 계속하시겠습니까?")) {
+  if (props.data && confirm("변경된 내용이 저장됩니다. 계속하시겠습니까?")) {
     const { id, type, position, data } = props.data;
     const changeData = { ...data, label: nodeLabel.value, description: nodeDesc.value };
     const updatedNode = {
@@ -42,9 +42,11 @@ const change = () => {
 };
 
 onMounted(() => {
-  const { label, description } = props.data.data;
-  nodeLabel.value = label;
-  nodeDesc.value = description;
+  if (props.data) {
+    const { label, description } = props.data.data;
+    nodeLabel.value = label;
+    nodeDesc.value = description;
+  }
 });
 </script>
 <template>

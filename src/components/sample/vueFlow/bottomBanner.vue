@@ -11,19 +11,20 @@ const props = defineProps({
   },
   selectedNodeInfo: {
     type: Object,
-    required: false
+    required: false,
+    default: () => {}
   }
 });
 
 const isOpenSelectBox = ref<boolean>(false);
-const selectMenu = ref(null);
+const selectMenu = ref<HTMLElement | null>(null);
 const selectedPathIndex = ref<number>(0);
 const selectedPathBtnId = ref<string>("");
-const connectionData = ref(null);
+const connectionData = ref<{ [key: string]: any } | null>(null);
 
 const contents = computed(() => {
   const { selectedNode, connectedNodes } = props.selectedNodeInfo;
-  if (selectedNode === null) return [];
+  if (!selectedNode) return {};
 
   const { id, type, dimensions, position, data } = selectedNode;
   return { selectedNode: { id, type, dimensions, position, data }, connectedNodes };
@@ -58,12 +59,12 @@ watch(
 
 const selectBoxClick = () => {
   isOpenSelectBox.value = !isOpenSelectBox.value;
-  if (isOpenSelectBox.value) {
+  if (selectMenu.value && isOpenSelectBox.value) {
     selectMenu.value.focus();
   }
 };
 
-const getConnectionData = (connectType, nodeIndex) => {
+const getConnectionData = (connectType: string, nodeIndex: number) => {
   const { id, type, dimensions, position, data } = selectedPath.value[nodeIndex];
   selectedPathBtnId.value = `${connectType}_${nodeIndex}`;
   if (connectType === "node") {
@@ -80,7 +81,7 @@ const getConnectionData = (connectType, nodeIndex) => {
       .filter(({ source, target }) => {
         return source === id && target === nextNodeId;
       })
-      .shift();
+      .shift() || {};
 
     connectionData.value = { "EDGE ID": edgeId, type: edgeType, source, target, data };
   }

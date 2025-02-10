@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 
-import useDragAndDrop from "./dragAndDrop.ts";
+import useDragAndDrop from "./useDragAndDrop.ts";
 const { onDragStart } = useDragAndDrop();
 
 const contentRefs = ref([]);
