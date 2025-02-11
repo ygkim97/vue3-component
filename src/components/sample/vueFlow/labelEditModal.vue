@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { defineEmits, onMounted, ref } from "vue";
+import type { PropType } from "vue";
 import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
+import type { CustomNode } from "@/types/vueFlow.ts";
 import { useVueFlow } from "@vue-flow/core";
 const vueFlowStore = useVueFlowStore();
 
@@ -9,7 +11,7 @@ const { updateNode } = vueFlowStore;
 
 const props = defineProps({
   data: {
-    type: Object || null,
+    type: Object as PropType<CustomNode | null>,
     required: false
   }
 });
@@ -45,7 +47,7 @@ onMounted(() => {
   if (props.data) {
     const { label, description } = props.data.data;
     nodeLabel.value = label;
-    nodeDesc.value = description;
+    nodeDesc.value = description || "";
   }
 });
 </script>

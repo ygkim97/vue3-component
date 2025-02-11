@@ -5,7 +5,7 @@ export interface CustomNode {
   id: string; // 노드의 고유 ID
   type: string; // 노드의 타입
   position: { x: number; y: number }; // 노드의 위치 (x, y 좌표)
-  data: { type: string | null; label: string }; // 추가 데이터
+  data: { type: string | null; label: string; description?: string }; // 추가 데이터
 }
 
 export interface CustomEdge {
