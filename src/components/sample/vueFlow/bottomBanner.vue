@@ -158,7 +158,7 @@ const getConnectionData = (connectType: string, nodeIndex: number) => {
             </div>
           </div>
           <div class="connection-info__content">
-            <ol class="grid my-auto" :class="selectedPath ? `grid-cols-${selectedPath.length}` : ''">
+            <ol class="grid my-auto w-full" :class="selectedPath ? `grid-cols-${selectedPath.length}` : ''">
               <li
                 v-for="(_, index) in selectedPath"
                 :key="index"

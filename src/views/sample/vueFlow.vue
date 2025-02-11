@@ -56,12 +56,11 @@ const markerOptions = ["plain", "arrow", "diamond", "circle", "square"];
 const isNodeDataOnly = ref<boolean>(false);
 
 watch(getSelectedNodes, ([node]) => {
-  selectedNodeInfo.selectedNode = node || null;
+  closeBanner();
 
+  selectedNodeInfo.selectedNode = node || null;
   if (node) {
     setConnectionNodes();
-  } else {
-    closeBanner();
   }
 });
 
