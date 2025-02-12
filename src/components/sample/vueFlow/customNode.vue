@@ -83,14 +83,15 @@ const nodeType = ref(props.data?.type);
 
 /* Node Custom */
 .vue-flow__node {
-  @apply w-36 h-10 rounded-full border-2 border-blue-900 flex items-center justify-center text-sm font-medium text-blue-900 bg-white !important;
+  @apply w-36 h-10 rounded-full border-2 border-blue-900 flex items-center justify-center text-sm font-medium text-blue-900 bg-white;
 }
 
 .vue-flow__node.selected {
-  @apply bg-blue-900 text-white !important;
+  @apply bg-blue-900 text-white;
 }
 
 /* Handle Custom */
+/* NOTE: 기본스타일이 우선순위로 되어있는지 우선순위 강제로 주지않으면 제대로 적용되지 않음 */
 .vue-flow__handle {
   @apply w-2 h-2 border-blue-900 border-2 bg-white !important;
 }
@@ -125,5 +126,9 @@ const nodeType = ref(props.data?.type);
 
 .vue-flow__node-label {
   @apply truncate w-full text-center block px-4;
+}
+
+.my-custom-node-class {
+  @apply border-4 border-green-800 text-green-800;
 }
 </style>

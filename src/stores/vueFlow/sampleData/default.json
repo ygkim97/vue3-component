@@ -1,51 +1,67 @@
 {
   "nodes": [
     {
-      "id": "1",
+      "id": "d1",
       "type": "custom",
       "position": { "x": 0, "y": 0 },
-      "data": { "type": "input", "label": "Node 1" }
+      "data": { "type": "input", "label": "Node 1" },
+      "class": "my-custom-node-class"
     },
     {
-      "id": "2",
+      "id": "d2",
       "type": "custom",
       "position": { "x": 200, "y": 0 },
-      "data": { "type": "default", "label": "Node 2" }
+      "data": { "type": "default", "label": "Node 2" },
+      "class": "my-custom-node-class"
     },
     {
-      "id": "3",
+      "id": "d3",
       "type": "custom",
       "position": { "x": 400, "y": 0 },
-      "data": { "type": "default", "label": "Node 3" }
+      "data": { "type": "default", "label": "Node 3" },
+      "class": "my-custom-node-class"
     },
     {
-      "id": "4",
+      "id": "d4",
       "type": "custom",
       "position": { "x": 600, "y": 0 },
-      "data": { "type": "output", "label": "Node 4" }
+      "data": { "type": "output", "label": "Node 4" },
+      "class": "my-custom-node-class"
     }
   ],
   "edges": [
     {
-      "id": "e1->2",
+      "id": "ed1->d2",
       "type": "custom",
-      "source": "1",
-      "target": "2"
+      "source": "d1",
+      "target": "d2",
+      "style": {
+        "stroke": "darkgreen",
+        "strokeWidth": "3px"
+      }
     },
     {
-      "id": "e2->3",
+      "id": "ed2->d3",
       "type": "custom",
-      "source": "2",
-      "target": "3",
-      "animated": false
+      "source": "d2",
+      "target": "d3",
+      "animated": false,
+      "style": {
+        "stroke": "darkgreen",
+        "strokeWidth": "3px"
+      }
     },
     {
-      "id": "e3->4",
+      "id": "ed3->d4",
       "type": "custom",
-      "source": "3",
-      "target": "4",
+      "source": "d3",
+      "target": "d4",
       "data": {
         "hello": "world"
+      },
+      "style": {
+        "stroke": "darkgreen",
+        "strokeWidth": "3px"
       }
     }
   ]

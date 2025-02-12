@@ -74,7 +74,7 @@ watch(getSelectedEdges, ([edges]) => {
   <CustomMarker :id="markerId" :type="markerType" :fill="edgeColor"></CustomMarker>
   <BaseEdge
     :id="id"
-    :style="{ stroke: edgeColor }"
+    :style="style ? style : { stroke: edgeColor }"
     :path="path[0]"
     :marker-end="useCustomMarker ? `url(#${markerId})` : ''"
   />
