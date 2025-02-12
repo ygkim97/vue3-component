@@ -96,12 +96,24 @@ const nodeType = ref(props.data?.type);
   @apply w-2 h-2 border-blue-900 border-2 bg-white !important;
 }
 
+.my-custom-node-class {
+  @apply border-4 border-green-800 text-green-800;
+}
+
+.my-custom-node-class.selected {
+  @apply bg-green-950 text-white;
+}
+
+.my-custom-node-class .vue-flow__handle {
+  @apply w-4 h-4 border-green-800 border-4 !important;
+}
+
 .handle_error {
-  @apply bg-red-600 !important;
+  @apply bg-red-500 !important;
 }
 
 .handle_success {
-  @apply bg-green-700 !important;
+  @apply bg-green-500 !important;
 }
 
 /* Spinner */
@@ -126,9 +138,5 @@ const nodeType = ref(props.data?.type);
 
 .vue-flow__node-label {
   @apply truncate w-full text-center block px-4;
-}
-
-.my-custom-node-class {
-  @apply border-4 border-green-800 text-green-800;
 }
 </style>
