@@ -25,11 +25,11 @@ export function useRunProcess() {
     // path 별 nodeId group setting
     selectedNodeId = selectedNode.id;
     const connectedNodeIds =
-      connectedNodes !== null
-        ? connectedNodes.map((nodeGroup) => {
+      connectedNodes === null || connectedNodes.length === 0
+        ? [[selectedNodeId]] // 앞으로 연결된 node 가 없는 경우, 임의로 설정해준다
+        : connectedNodes.map((nodeGroup) => {
             return nodeGroup.map((node) => node.id);
-          })
-        : [[selectedNodeId]]; // 앞으로 연결된 node 가 없는 경우, 임의로 설정해준다
+          });
 
     // 실행해야되는 nodeId 값 배열로 셋팅(중복제거)
     uniqueValues = [...new Set(Object.values(connectedNodeIds).flat())];
