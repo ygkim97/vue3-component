@@ -3,7 +3,7 @@ import { useVueFlow } from "@vue-flow/core";
 import { ProcessStatus } from "@/constants/vueFlow.ts";
 import type { CustomNode, CustomEdge } from "@/types/vueFlow.ts";
 
-export function useRunProcess() {
+export default function useRunProcess() {
   const { updateNodeData, getConnectedEdges } = useVueFlow();
 
   const nodeStatusById = reactive<{ [key: string]: string }>({});

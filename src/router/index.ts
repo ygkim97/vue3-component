@@ -18,9 +18,14 @@ const router = createRouter({
       component: () => import("../views/AboutView.vue")
     },
     {
-      path: "/sample/vueFlow",
-      name: "vueFlow",
-      component: () => import("@/views/sample/vueFlow.vue")
+      path: "/sample/vueFlow/default",
+      name: "vueFlowDefault",
+      component: () => import("@/views/sample/vueFlow/default.vue")
+    },
+    {
+      path: "/sample/vueFlow/custom",
+      name: "vueFlowCustom",
+      component: () => import("@/views/sample/vueFlow/custom.vue")
     }
   ]
 });

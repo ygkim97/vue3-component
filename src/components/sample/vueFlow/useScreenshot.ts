@@ -3,7 +3,7 @@ import { toJpeg as ElToJpg, toPng as ElToPng } from "html-to-image";
 import type { Options as HTMLToImageOptions } from "html-to-image/es/types";
 import type { ImageType, UseScreenshot, UseScreenshotOptions } from "@/types/vueFlow.ts";
 
-export function useScreenshot(): UseScreenshot {
+export default function useScreenshot(): UseScreenshot {
   const dataUrl = ref<string>("");
   const imgType = ref<ImageType>("png");
   const error = ref();

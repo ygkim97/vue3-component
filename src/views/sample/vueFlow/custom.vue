@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, reactive } from "vue";
+import { ref, watch, reactive, onUnmounted } from "vue";
 import { storeToRefs } from "pinia";
 import { VueFlow, Panel, useVueFlow } from "@vue-flow/core";
 import type { Connection } from "@vue-flow/core";
@@ -13,10 +13,10 @@ import Sidebar from "@/components/sample/vueFlow/sidebar.vue";
 import DropzoneBackground from "@/components/sample/vueFlow/dropzoneBackground.vue";
 import BottomBanner from "@/components/sample/vueFlow/bottomBanner.vue";
 import LabelEditModal from "@/components/sample/vueFlow/labelEditModal.vue";
-import useDragAndDrop from "@/components/sample/vueFlow/useDragAndDrop.ts";
 import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
-import { useRunProcess } from "@/components/sample/vueFlow/useRunProcess.ts";
-import { useScreenshot } from "@/components/sample/vueFlow/useScreenshot.ts";
+import useDragAndDrop from "@/components/sample/vueFlow/useDragAndDrop.ts";
+import useRunProcess from "@/components/sample/vueFlow/useRunProcess.ts";
+import useScreenshot from "@/components/sample/vueFlow/useScreenshot.ts";
 
 const {
   getSelectedNodes,
@@ -27,7 +27,6 @@ const {
   vueFlowRef,
   addSelectedNodes
 } = useVueFlow();
-const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 const vueFlowStore = useVueFlowStore();
 const {
   resetAll,
@@ -40,6 +39,7 @@ const {
   setRestoredData
 } = vueFlowStore;
 const { nodes, edges } = storeToRefs(vueFlowStore);
+const { onDragOver, onDrop, onDragLeave, isDragOver } = useDragAndDrop();
 const { run, reset } = useRunProcess();
 const { capture } = useScreenshot();
 
@@ -212,6 +212,8 @@ const setConnectionNodes = () => {
   }
 
   selectedNodeInfo.connectedNodes = connectData;
+
+  console.info("selectedNodeInfo", selectedNodeInfo);
 };
 
 const nodeClick = () => {
@@ -246,6 +248,9 @@ const restoreSavedFlow = () => {
   }
 };
 
+/**
+ * VueFlow Screenshot
+ */
 const doScreenshot = () => {
   if (!vueFlowRef.value) {
     console.warn("VueFlow element not found");
@@ -254,6 +259,10 @@ const doScreenshot = () => {
 
   capture(vueFlowRef.value, { shouldDownload: true, isNodeDataOnly: isNodeDataOnly.value });
 };
+
+onUnmounted(() => {
+  resetNode();
+});
 </script>
 
 <template>
@@ -264,14 +273,13 @@ const doScreenshot = () => {
       fit-view-on-init
       :nodes="nodes"
       :edges="edges"
-      :default-viewport="{ zoom: 1.5 }"
       :min-zoom="0.2"
       :max-zoom="3"
+      :snap-to-grid="true"
+      :snap-grid="[200, 100]"
       @connect="onConnect"
       @dragover="onDragOver"
       @dragleave="onDragLeave"
-      :snap-to-grid="true"
-      :snap-grid="[200, 100]"
       @nodeDragStop="nodeDragStop"
       @nodeClick="nodeClick"
     >
@@ -351,7 +359,7 @@ const doScreenshot = () => {
           @removeEdge="removeEdges"
         />
       </template>
-      <Controls position="top-right">
+      <Controls position="top-right" :show-fit-view="true">
         <ControlButton title="save" @click="onSave">
           <svg-icon name="floppy-disk"></svg-icon>
         </ControlButton>

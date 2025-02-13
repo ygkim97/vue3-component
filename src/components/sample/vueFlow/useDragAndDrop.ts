@@ -4,7 +4,6 @@ import { useVueFlowStore } from "@/stores/vueFlow/vueFlow.ts";
 import type { CustomNode } from "@/types/vueFlow.ts";
 
 // TODO: 재사용가능하도록 수정하여 /composables 디렉토리로 이동
-// TODO: 드롭 시, 격자에 맞춰 배치되도록 설정
 
 let id = 0;
 const GRID_SIZE = { X: 200, Y: 100 };
@@ -83,7 +82,6 @@ export default function useDragAndDrop() {
     });
 
     // NODE: x, y 좌표를 격자 크기에 맞게 정렬
-    // TODO: 해당 좌표에 이미 노드가 존재할 경우 처리
     const alignedPosition = ["x", "y"].reduce(
       (acc, coordinate) => {
         const gridSize = GRID_SIZE[coordinate.toUpperCase() as keyof typeof GRID_SIZE];
@@ -94,23 +92,18 @@ export default function useDragAndDrop() {
       {} as { x: number; y: number }
     );
 
-    const nodeId = getId();
+    // 놓으려는 위치에 이미 노드가 존재하면 노드 추가 못하도록 처리
+    if (getNodeByPosition(alignedPosition)) {
+      return;
+    }
 
+    const nodeId = getId();
     const newNode: CustomNode = {
       id: nodeId,
       type: "custom",
       position: alignedPosition,
       data: { type: draggedType.value, label: nodeId }
     };
-
-    const getNodeByPosition = (position: { x: number; y: number }) => {
-      return nodes.find((node) => node.position.x === position.x && node.position.y === position.y) || null;
-    };
-
-    if (getNodeByPosition(alignedPosition)) {
-      id -= 1;
-      return;
-    }
 
     // NOTE: vue store 에 추가된 node 저장
     addNode(newNode);
@@ -133,6 +126,10 @@ export default function useDragAndDrop() {
 
       off();
     });
+  };
+
+  const getNodeByPosition = (position: { x: number; y: number }) => {
+    return nodes.find((node) => node.position.x === position.x && node.position.y === position.y) || null;
   };
 
   return {

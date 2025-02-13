@@ -7,7 +7,8 @@ const currentPath = computed(() => route.path);
 const menuList = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
-  { name: "VueFlow", path: "/sample/vueFlow" }
+  { name: "VueFlowDefault", path: "/sample/vueFlow/default" },
+  { name: "VueFlowCustom", path: "/sample/vueFlow/custom" }
 ];
 </script>
 

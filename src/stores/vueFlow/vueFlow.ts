@@ -2,12 +2,12 @@ import { reactive, computed } from "vue";
 import { defineStore } from "pinia";
 import defaultSampleData from "@/stores/vueFlow/sampleData/default.json";
 import connectionSampleData from "@/stores/vueFlow/sampleData/connection.json";
+import complexSampleData from "@/stores/vueFlow/sampleData/complex.json";
 import type { CustomNode, CustomEdge } from "@/types/vueFlow.ts";
 
 export const useVueFlowStore = defineStore("vueFlow", () => {
   const nodes = reactive<CustomNode[]>([]);
   const edges = reactive<CustomEdge[]>([]);
-
   const nodeListByKey = computed(() => {
     return new Map(nodes.map((node) => [node.id, node]));
   });
@@ -18,11 +18,10 @@ export const useVueFlowStore = defineStore("vueFlow", () => {
   };
 
   const getJsonData = (action: string) => {
-    resetAll();
-
-    const sampleData = action === "default" ? defaultSampleData : connectionSampleData;
-    nodes.push(...sampleData.nodes);
-    edges.push(...sampleData.edges);
+    const sampleData =
+      action === "default" ? defaultSampleData : action === "connection" ? connectionSampleData : complexSampleData;
+    nodes.splice(0, nodes.length, ...sampleData.nodes);
+    edges.splice(0, edges.length, ...sampleData.edges);
   };
 
   const addNode = (node: CustomNode) => {
