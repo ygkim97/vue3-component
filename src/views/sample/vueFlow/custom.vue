@@ -54,6 +54,7 @@ const isOpenMarkerSelectBox = ref<boolean>(false);
 const markerType = ref<string>("plain");
 const markerOptions = ["plain", "arrow", "diamond", "circle", "square"];
 const isNodeDataOnly = ref<boolean>(false);
+const isOnlyRenderVisibleElements = ref<boolean>(false);
 
 watch(getSelectedNodes, ([node]) => {
   closeBanner();
@@ -270,7 +271,6 @@ onUnmounted(() => {
     <Sidebar @getJsonData="getJsonData" @createNode="createNode" @resetNode="resetNode" />
     <VueFlow
       class="vue-flow"
-      fit-view-on-init
       :nodes="nodes"
       :edges="edges"
       :min-zoom="0.2"
@@ -282,6 +282,7 @@ onUnmounted(() => {
       @dragleave="onDragLeave"
       @nodeDragStop="nodeDragStop"
       @nodeClick="nodeClick"
+      :onlyRenderVisibleElements="isOnlyRenderVisibleElements"
     >
       <DropzoneBackground
         :style="{
@@ -336,6 +337,17 @@ onUnmounted(() => {
             />
             <label for="screenshot-only-data" class="ms-2 text-sm font-medium text-gray-700"
               >SCREENSHOT ONLY DATA</label
+            >
+          </div>
+          <div class="flex items-center col-span-2">
+            <input
+              id="only-render-visible-elements"
+              type="checkbox"
+              v-model="isOnlyRenderVisibleElements"
+              class="w-4 h-4 text-blue-900 bg-gray-100 border-gray-300 rounded-sm dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label for="only-render-visible-elements" class="ms-2 text-sm font-medium text-gray-700"
+              >ONLY RENDER VISIBLE ELEMENTS</label
             >
           </div>
         </div>
